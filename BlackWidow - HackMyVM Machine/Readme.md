@@ -23,7 +23,7 @@ As the machine does not provide an IP address, we start by identifying it on the
 
 Moving forward, we will use netdiscover to locate the machine.
 
-i2
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i2.png)
 
 For my setup, the interface was **eth1**. You should use whichever interface is connected to your lab network.
 
@@ -31,7 +31,7 @@ For my setup, the interface was **eth1**. You should use whichever interface is 
 netdiscover -i eth1
 ```
 
-i3
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i3.png)
 
 After running netdiscover, we identify the target machine:
 
@@ -63,7 +63,7 @@ Results:
 55007/tcp open  unknown
 ```
 
-i4
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i4.png)
 
 Several interesting services are exposed including:
 
@@ -79,7 +79,7 @@ To gather more information, we perform service and version detection.
 nmap -sCV -p22,80,111,2049,3128,38645,42105,42601,55007 192.168.56.119
 ```
 
-i5
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i5.png)
 
 Important findings:
 
@@ -99,7 +99,7 @@ We begin investigating port **80**.
 
 Visiting the homepage reveals nothing except a Black Widow spider image.
 
-i6
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i6.png)
 
 Since the homepage contains almost no useful information, we proceed with directory and file fuzzing.
 
@@ -121,7 +121,7 @@ Interesting findings:
 /company/assets/img/
 ```
 
-i7
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i7.png)
 
 The most interesting path is:
 
@@ -143,7 +143,7 @@ blackwidow
 
 To ensure proper functionality of the website we add the hostname to our hosts file.
 
-i8
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i8.png)
 
 ```bash
 echo "192.168.56.119 blackwidow" >> /etc/hosts
@@ -161,7 +161,7 @@ Since port **111** is open, we enumerate RPC services.
 rpcinfo -p 192.168.56.119
 ```
 
-i10
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i10.png)
 
 The machine exposes several NFS and mount services.
 
@@ -182,7 +182,7 @@ RPC Services = Rabbit Hole
 
 No direct attack path was discovered through these services.
 
-i11
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i11.png)
 
 Returning to the web application and monitoring requests through Burp Suite eventually reveals something much more interesting.
 
@@ -208,7 +208,7 @@ This behavior strongly suggests a possible LFI vulnerability.
 
 To confirm the vulnerability, we perform file fuzzing.
 
-i12
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i12.png)
 
 ```bash
 ffuf -c -u 'http://192.168.56.119/?file=FUZZ' \
@@ -216,11 +216,11 @@ ffuf -c -u 'http://192.168.56.119/?file=FUZZ' \
 -fw 1
 ```
 
-i13
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i13.png)
 
 After further testing and validation, the LFI vulnerability appears exploitable.
 
-i14
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i14.png)
 
 At this point, we begin exploring methods to turn the LFI into Remote Code Execution.
 
@@ -260,7 +260,7 @@ Response:
 uid=33(www-data) gid=33(www-data) groups=33(www-data)
 ```
 
-i15
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i15.png)
 
 We now have command execution.
 
@@ -282,7 +282,7 @@ www-data
 
 Python stabilization was not available in my case, so I used the classic script method.
 
-i16
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i16.png)
 
 ```bash
 script -qc /bin/bash /dev/null
@@ -346,7 +346,7 @@ auth.log
 
 Inspecting the authentication logs reveals credentials.
 
-i17
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i17.png)
 
 Discovered password:
 
@@ -366,7 +366,7 @@ At this point we can retrieve:
 local.txt
 ```
 
-i18
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i18.png)
 
 ---
 
@@ -416,7 +416,7 @@ Running help:
 ./arsenic -h
 ```
 
-i19
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i19.png)
 
 The output reveals something very interesting.
 
@@ -453,7 +453,7 @@ Navigate to root directory and read:
 cat /root/root.txt
 ```
 
-i20
+![image alt](https://github.com/naval0505/HackMyVM/blob/d54ea5b1629806723acb077971f3c498b3aac358/BlackWidow%20-%20HackMyVM%20Machine/images/i20.png)
 
 Root flag:
 
