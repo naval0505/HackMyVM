@@ -19,7 +19,7 @@ Unlike many other HackMyVM machines, this one does not reveal its IP address in 
 
 As the machine does not provide an IP address, we start by identifying it on the network using **netdiscover**.
 
-![image alt]{https://github.com/naval0505/HackMyVM/blob/c90ecfea1bd8fb1a6dc9e9d1e9e2dc9715dea0e2/BlackWidow%20-%20HackMyVM%20Machine/images/i1.png}
+![image alt](https://github.com/naval0505/HackMyVM/blob/c90ecfea1bd8fb1a6dc9e9d1e9e2dc9715dea0e2/BlackWidow%20-%20HackMyVM%20Machine/images/i1.png)
 
 Moving forward, we will use netdiscover to locate the machine.
 
