@@ -20,7 +20,7 @@ Starting with the target machine IP address.
 192.168.56.121
 ```
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/bc50d6dd04217e065534efc0976ccdc4ca7b5ec5/Gift%20-%20HackMyVM%20Machine/uploads/i1.png)
 
 ---
 
@@ -50,7 +50,7 @@ Only two services are exposed:
 * SSH (22)
 * HTTP (80)
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/bc50d6dd04217e065534efc0976ccdc4ca7b5ec5/Gift%20-%20HackMyVM%20Machine/uploads/i2.png)
 
 ---
 
@@ -87,7 +87,7 @@ Supported Methods: GET HEAD
 
 At first glance, the attack surface appears very small.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/bc50d6dd04217e065534efc0976ccdc4ca7b5ec5/Gift%20-%20HackMyVM%20Machine/uploads/i3.png)
 
 ---
 
@@ -115,7 +115,7 @@ Sometimes challenge authors intentionally provide hints directly on the homepage
 
 At this stage there is no functionality, login form, or obvious attack vector.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/bc50d6dd04217e065534efc0976ccdc4ca7b5ec5/Gift%20-%20HackMyVM%20Machine/uploads/i4.png)
 
 ---
 
@@ -162,7 +162,7 @@ At this point, the hint becomes important:
 Don't overthink it.
 ```
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/bc50d6dd04217e065534efc0976ccdc4ca7b5ec5/Gift%20-%20HackMyVM%20Machine/uploads/i5.png)
 
 ---
 
@@ -207,7 +207,7 @@ Username: root
 Password: simple
 ```
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/bc50d6dd04217e065534efc0976ccdc4ca7b5ec5/Gift%20-%20HackMyVM%20Machine/uploads/i6.png)
 
 ---
 
@@ -248,7 +248,7 @@ user.txt
 
 Both flags are directly accessible.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/bc50d6dd04217e065534efc0976ccdc4ca7b5ec5/Gift%20-%20HackMyVM%20Machine/uploads/i7.png)
 
 ---
 
