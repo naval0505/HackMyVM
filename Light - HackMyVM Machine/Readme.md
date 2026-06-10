@@ -18,7 +18,7 @@ Unlike most HackMyVM machines, this box does not provide an IP address in the ba
 
 We must first identify the target on the local network.
 
-![image alt](q1)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q1.png)
 
 ---
 
@@ -38,7 +38,7 @@ Target IP:
 192.168.56.124
 ```
 
-![image alt](q2)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q2.png)
 
 ---
 
@@ -85,7 +85,7 @@ The strange service returns what appears to be PNG file data.
 
 This immediately suggests that the service is serving image content directly over TCP.
 
-![image alt](q3)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q3.png)
 
 ---
 
@@ -101,7 +101,7 @@ However the service returned no meaningful response.
 
 The only clue remained the PNG header visible during Nmap fingerprinting.
 
-![image alt](q4)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q4.png)
 
 ---
 
@@ -125,7 +125,7 @@ The service appears to rotate ports dynamically.
 
 This suggests a challenge mechanic rather than a traditional network service.
 
-![image alt](q5)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q5.png)
 
 ---
 
@@ -145,7 +145,7 @@ However opening the image results in corruption errors.
 
 The file is clearly not a normal PNG.
 
-![image alt](q6)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q6.png)
 
 ---
 
@@ -159,7 +159,7 @@ The data is then reviewed using CyberChef.
 
 This uncovers embedded credentials hidden within the image data.
 
-![image alt](q7)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q7.png)
 
 ---
 
@@ -175,7 +175,7 @@ These credentials appear legitimate.
 
 The obvious next step is SSH authentication.
 
-![image alt](q8)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q8.png)
 
 ---
 
@@ -225,7 +225,7 @@ iloveopenedports
 
 User access obtained.
 
-![image alt](q9)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q9.png)
 
 ---
 
@@ -258,7 +258,7 @@ can be executed as root without a password.
 
 This immediately becomes our privilege escalation vector.
 
-![image alt](q10)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q11.png)
 
 ---
 
@@ -372,7 +372,7 @@ ilovepython
 
 Root compromise complete.
 
-![image alt](q11)
+![image alt](https://github.com/naval0505/HackMyVM/blob/59efd524ce66abdaab7ec56888ef67fbe8b4b078/Light%20-%20HackMyVM%20Machine/uploads/q11.png)
 
 ---
 
