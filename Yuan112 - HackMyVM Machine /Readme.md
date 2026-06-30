@@ -16,7 +16,7 @@
 
 The target machine was started and the boot banner revealed the target IP address.
 
-![image alt](1)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q1.png)
 
 **Target IP**
 
@@ -34,7 +34,7 @@ The first step was performing a complete TCP port scan to identify every open se
 nmap -p- 192.168.56.126 -vv
 ```
 
-![image alt](2)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q2.png)
 
 After discovering the open ports, a service and version detection scan was executed.
 
@@ -44,7 +44,7 @@ nmap -sC -sV 192.168.56.126
 
 The scan revealed the following services.
 
-![image alt](3)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q3.png)
 
 ```
 22/tcp  OpenSSH 8.4p1 Debian
@@ -78,7 +78,7 @@ sudo nano /etc/hosts
 
 Burp Suite was also started to inspect and modify requests.
 
-![image alt](4)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q4.png)
 
 The webpage simply parses whatever XML is supplied.
 
@@ -101,7 +101,7 @@ The XML was parsed successfully.
 
 However, when intercepted in Burp Suite it became apparent that the request body should be URL encoded before forwarding.
 
-![image alt](5)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q5.png)
 
 ---
 
@@ -121,7 +121,7 @@ An XXE payload was prepared to read local files.
 
 After URL encoding the payload inside Burp Suite and forwarding the request, the server responded with the contents of **/etc/passwd**.
 
-![image alt](6)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q6.png)
 
 Part of the response:
 
@@ -141,7 +141,7 @@ Before proceeding further, additional web enumeration was performed.
 
 Common directories and files were fuzzed in an attempt to discover hidden endpoints or backup files.
 
-![image alt](7)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q7.png)
 
 Despite thorough enumeration, nothing particularly interesting was discovered.
 
@@ -178,7 +178,6 @@ An XXE payload was then created attempting to download the shell onto the target
 
 Unfortunately, the parser generated an error instead of executing the payload.
 
-![image alt](8)
 
 This indicated that the PHP **expect** wrapper was unavailable or disabled.
 
@@ -196,7 +195,7 @@ tuf:x:1000:1000:KQNPHFqG**JHcYJossIe:/home/tuf:/bin/bash
 
 Unlike normal GECOS values, this looked suspiciously similar to a password with two missing characters.
 
-![image alt](9)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q9.png)
 
 Structure observed:
 
@@ -256,7 +255,7 @@ Hydra was then used against SSH.
 hydra -l tuf -P full_brute.txt ssh://192.168.56.126
 ```
 
-![image alt](10)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q10.png)
 
 Hydra successfully recovered the password.
 
@@ -301,7 +300,7 @@ The first step after obtaining shell access was checking sudo permissions.
 sudo -l
 ```
 
-![image alt](11)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q12.png)
 
 Output:
 
@@ -324,7 +323,7 @@ The sudo configuration directory was inspected.
 cat /etc/sudoers.d/zabbix
 ```
 
-![image alt](12)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q13.png)
 
 Interesting entry:
 
@@ -408,7 +407,7 @@ https://maze-sec.com/pwn/payload is a good url.
 
 Although manually executing the script as the normal user generated permission errors, the previous execution via **sudo** had already completed the privileged actions.
 
-![image alt](13)
+![image alt](https://github.com/naval0505/HackMyVM/blob/b7424203a742787a979c3615564290fd91af0412/Yuan112%20-%20HackMyVM%20Machine%20/imageshere/q14.png)
 
 At this point, full sudo privileges were available.
 
