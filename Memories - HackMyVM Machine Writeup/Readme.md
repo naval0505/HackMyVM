@@ -36,7 +36,7 @@ The first step is always to discover the exposed services.
 
 We begin with a full TCP port scan using **Nmap**.
 
-![Initial Scan](q1)
+![Initial Scan](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q1.png))
 
 Main Target IP
 
@@ -50,7 +50,7 @@ Main Target IP
 
 Running an initial scan reveals only two open ports.
 
-![Nmap Scan](q2)
+![Nmap Scan](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q2.png)
 
 ```
 22/tcp open  ssh
@@ -83,7 +83,7 @@ The web server is using the default Apache page, while SSH is available but curr
 
 Opening the website inside Burp Suite's browser shows nothing more than the default Apache landing page.
 
-![Apache Default Page](q3)
+![Apache Default Page](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q3.png)
 
 Although it appears uninteresting, default pages often hide additional resources that are not directly linked.
 
@@ -93,7 +93,7 @@ Although it appears uninteresting, default pages often hide additional resources
 
 To discover hidden files and directories, directory fuzzing is performed.
 
-![Directory Enumeration](q4)
+![Directory Enumeration](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q4.png)
 
 The results reveal:
 
@@ -112,7 +112,7 @@ Among these, **robots.txt** immediately stands out.
 
 Opening the robots file reveals an interesting hidden directory.
 
-![robots.txt](q5)
+![robots.txt](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q5.png)
 
 ```
 /memories
@@ -126,7 +126,7 @@ This directory is not linked from the homepage, making it our next target.
 
 Navigating to **/memories** presents an authentication prompt.
 
-![Authentication Prompt](q6)
+![Authentication Prompt](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q7.png)
 
 Since authentication is required, we continue enumerating the application instead of attempting brute force.
 
@@ -138,7 +138,7 @@ Since authentication is required, we continue enumerating the application instea
 
 Running **Nikto** against the web server uncovers an interesting behavior.
 
-![Nikto](q7)
+![Nikto](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q8.png)
 
 One of the findings indicates a possible CORS-related issue on the `/memories` endpoint.
 
@@ -148,7 +148,7 @@ One of the findings indicates a possible CORS-related issue on the `/memories` e
 
 Changing the request method from **GET** to **POST** produces a completely different response.
 
-![POST Request](q8)
+![POST Request](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q9.png)
 
 Instead of an authentication page, the server exposes sensitive content.
 
@@ -158,7 +158,7 @@ Instead of an authentication page, the server exposes sensitive content.
 
 The POST request returns an entire **OpenSSH private key** belonging to user **laura**.
 
-![Private Key](q9)
+![Private Key](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q10.png)
 
 ```text
 -----BEGIN OPENSSH PRIVATE KEY-----
@@ -190,7 +190,7 @@ Successful login grants us an initial shell as **laura**.
 
 After gaining shell access, we begin searching for the user flag.
 
-![Searching](q10)
+![Searching](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q11.png)
 
 A recursive search does not immediately reveal the flag inside Laura's home directory.
 
@@ -200,7 +200,7 @@ A recursive search does not immediately reveal the flag inside Laura's home dire
 
 While enumerating the filesystem, another user's home directory becomes accessible.
 
-![Lucy Directory](q11)
+![Lucy Directory](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q12.png)
 
 ```
 /home/lucy
@@ -214,7 +214,7 @@ Although permission restrictions prevent direct access to everything, privilege 
 
 Checking Laura's sudo permissions reveals an interesting binary.
 
-![sudo -l](q12)
+![sudo -l](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q12.png)
 
 ```
 sudo -l
@@ -255,7 +255,7 @@ chmod 600 lucy_rsa
 
 Connect using SSH.
 
-![Lucy Login](q13)
+![Lucy Login](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q14.png)
 
 ```
 ssh -i lucy_rsa lucy@192.168.56.128
@@ -269,7 +269,7 @@ Login succeeds.
 
 Inside Lucy's home directory we finally obtain the user flag.
 
-![User Flag](q14)
+![User Flag](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q15.png)
 
 ```
 user.txt
@@ -284,8 +284,6 @@ User access is complete.
 # Privilege Escalation - Lucy ➜ Root
 
 Checking Lucy's sudo permissions reveals another interesting binary.
-
-![Root Enumeration](q15)
 
 ```
 sudo -l
@@ -330,6 +328,7 @@ Using the recovered password:
 ```
 su root
 ```
+![Perms](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q16.png)
 
 Root access is successfully obtained.
 
@@ -339,7 +338,7 @@ Root access is successfully obtained.
 
 After switching to the root account:
 
-![Root Flag](q16)
+![Root Flag](https://github.com/naval0505/HackMyVM/blob/d7e198adfa7a18f42b48ac1aa222d96885d4a1c8/Memories%20-%20HackMyVM%20Machine%20Writeup/q17.png)
 
 ```
 whoami
