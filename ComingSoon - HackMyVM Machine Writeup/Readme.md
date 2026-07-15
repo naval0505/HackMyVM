@@ -27,7 +27,7 @@ This discovers the target machine with the following IP address:
 192.168.56.108
 ```
 
-![Netdiscover identifying target IP](q1)
+![Netdiscover identifying target IP](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q1.png)
 
 ---
 
@@ -53,7 +53,7 @@ Only two ports are exposed:
 * SSH (22)
 * HTTP (80)
 
-![Nmap all ports scan](q2)
+![Nmap all ports scan](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q2.png)
 
 ---
 
@@ -74,7 +74,7 @@ nmap -sC -sV 192.168.56.108
 
 The HTTP service hosts a simple "Coming Soon" webpage.
 
-![Nmap service enumeration](q3)
+![Nmap service enumeration](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q3.png)
 
 ---
 
@@ -107,7 +107,7 @@ notes.txt (200)
 
 The `notes.txt` file immediately stands out.
 
-![Gobuster results](q5)
+![Gobuster results](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q6.png)
 
 ---
 
@@ -149,7 +149,7 @@ From this note we learn several important details:
 
 The mention of an image uploader becomes our primary attack vector.
 
-![Contents of notes.txt](q6)
+![Contents of notes.txt](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q5.png)
 
 ---
 
@@ -198,7 +198,7 @@ false
 
 This indicates the application stores whether uploading is enabled directly inside a client-side cookie.
 
-![HTTP response showing cookie](q7)
+![HTTP response showing cookie](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q8.png)
 
 ---
 
@@ -220,9 +220,9 @@ using the browser's developer tools, the hidden upload feature becomes visible a
 
 This demonstrates insecure client-side authorization, where access control is enforced using a value that the user can modify.
 
-![Editing the cookie in browser developer tools](q8)
+![Editing the cookie in browser developer tools](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q10.png)
 
-![Image upload option visible after cookie modification](q9)
+![Image upload option visible after cookie modification](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
 
 ---
 
@@ -242,9 +242,9 @@ nc -lvnp 4444
 
 Upload the reverse shell through the image uploader and execute it to obtain a shell on the target system.
 
-![Uploading the reverse shell](q10)
+![Uploading the reverse shell](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
 
-![Reverse shell connection received](q11)
+![Reverse shell connection received](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q13.png)
 
 ---
 
@@ -277,7 +277,7 @@ export TERM=xterm
 
 The shell is now fully interactive.
 
-![Interactive shell stabilization](q12)
+![Interactive shell stabilization](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q13.png)
 
 ---
 
@@ -297,7 +297,7 @@ cp backup.tar.gz /tmp/
 
 Extract the archive for analysis.
 
-![Copying the backup archive](q13)
+![Copying the backup archive](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
 
 ---
 
@@ -310,7 +310,7 @@ The extracted archive contains sensitive system files, including:
 
 This provides offline password hashes for cracking.
 
-![Extracted backup contents](q14)
+![Extracted backup contents](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
 
 ---
 
@@ -330,7 +330,7 @@ Recovered password:
 tigger
 ```
 
-![John cracking the user password](q15)
+![John cracking the user password](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q16.png)
 
 ---
 
@@ -354,8 +354,6 @@ Retrieve the user flag.
 HMV{user:comingsoon.hmv:58842fc1a7}
 ```
 
-![User flag](q16)
-
 ---
 
 # Privilege Escalation
@@ -375,7 +373,7 @@ BigHero6
 
 This suggests the administrator follows a naming pattern based on animated movie titles.
 
-![Contents of .oldpasswords](q17)
+![Contents of .oldpasswords](https://github.com/naval0505/HackMyVM/blob/7e79a31923a1131335cf946bbe68e10efaf2142e/ComingSoon%20-%20HackMyVM%20Machine%20Writeup/images/q17.png)
 
 ---
 
@@ -399,9 +397,6 @@ Recovered password:
 ToyStory3
 ```
 
-![John cracking the root password](q18)
-
----
 
 # Root Access
 
@@ -430,8 +425,6 @@ HMV{root:comingsoon.hmv:2339dc81ca}
 ```
 
 Machine successfully rooted.
-
-![Root flag](q19)
 
 ---
 
