@@ -19,6 +19,8 @@ A simple and effective tool for this is **Netdiscover**, which listens for ARP t
 ```bash
 netdiscover -i eth1
 ```
+![Machine Deployment - Crossroads VM Started](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q1.png)
+
 
 > Replace `eth1` with your own network interface if it differs.
 
@@ -35,6 +37,9 @@ Among these, **192.168.56.132** is identified as our target machine.
 With the target identified, the next step is to determine which services are exposed.
 
 ---
+
+![Netdiscover Identifying the Target IP Address](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q2.png)
+
 
 # Port Scanning
 
@@ -83,6 +88,9 @@ Additional information discovered during the scan includes:
 
 One particularly interesting finding is the robots.txt entry.
 
+![Nmap Service and Version Detection Scan](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q4.png)
+
+
 ```
 Disallow: /crossroads.png
 ```
@@ -100,6 +108,9 @@ One of the most useful enumeration tools for Samba environments is **enum4linux*
 ```bash
 enum4linux 192.168.56.132
 ```
+
+![SMB Enumeration Using Enum4linux](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q5.png)
+
 
 The enumeration reveals several useful pieces of information.
 
@@ -157,6 +168,9 @@ Although no immediate vulnerabilities are identified, further enumeration is sti
 
 ---
 
+![WordPress Website Homepage](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q6.png)
+
+
 # Directory Enumeration
 
 After manually inspecting the website, the next logical step is directory brute forcing.
@@ -172,6 +186,9 @@ User-agent: *
 Disallow: /crossroads.png
 ```
 
+![Directory Enumeration Revealing robots.txt](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q7.png)
+
+
 Unlike many robots.txt files that expose multiple directories, this one references only a single image.
 
 Naturally, we inspect the image in case it contains hidden information such as metadata, steganographic content, or embedded credentials.
@@ -181,6 +198,9 @@ However, the image itself does not provide any immediately useful information.
 At this point, both manual web enumeration and robots.txt inspection have failed to reveal an initial foothold.
 
 ---
+
+![robots.txt Revealing crossroads.png](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q8.png)
+
 
 # Revisiting SMB
 
@@ -201,6 +221,9 @@ For this purpose, **Medusa** is used against the SMB service.
 ```bash
 medusa -h 192.168.56.132 -u albert -P <wordlist> -M smbnt
 ```
+
+![Medusa Successfully Brute Forcing SMB Credentials](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q9.png)
+
 
 After a short period, Medusa successfully discovers valid credentials.
 
@@ -235,6 +258,9 @@ authentication succeeds and we gain access to the share.
 
 Unlike anonymous access, the authenticated session exposes several files that are immediately interesting.
 
+![Authenticated SMB Share Showing user.txt and smb.conf](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q10.png)
+
+
 ```
 user.txt
 smb.conf
@@ -257,6 +283,7 @@ After downloading the file to our attacking machine, we read its contents.
 ```bash
 cat user.txt
 ```
+
 
 Output:
 
@@ -386,6 +413,8 @@ Listening on 0.0.0.0 4444
 
 Connection received from 192.168.56.132
 ```
+
+![Reverse Shell Obtained Through Samba Magic Script](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
 
 We now have an interactive shell on the target.
 
@@ -631,6 +660,9 @@ root
 ___drifting___
 ```
 
+![Root Credentials Retrieved from rootcreds File](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
+
+
 The file contained both the username and the root password in plain text.
 
 Although storing credentials in plaintext is never recommended in real environments, this was the intended privilege escalation path for the challenge.
@@ -682,6 +714,8 @@ Output:
 At this point the machine has been fully compromised.
 
 ---
+
+![Successful Root Shell and Root Flag](https://github.com/naval0505/HackMyVM/blob/739ddcf5c968c78a040f30994e1914bfb736a9f4/CrossRoads%20-%20HackMyVM%20Machine%20Writeup/images/q13.png)
 
 # Attack Chain Summary
 
