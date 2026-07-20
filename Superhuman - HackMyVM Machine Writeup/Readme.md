@@ -121,17 +121,9 @@ After verifying the environment, the target machine is identified as:
 192.168.56.133
 ```
 
-### Screenshot
 
-```text
-images/01-netdiscover.png
-```
-
-```md
 ![Netdiscover](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q2.png)
-```
 
----
 
 # Initial Port Enumeration
 
@@ -150,13 +142,6 @@ The scan reports only two open services.
 
 This significantly reduces the exposed attack surface.
 
-### Screenshot
-
-```md
-![Initial Nmap Scan](images/02-nmap-allports.png)
-```
-
----
 
 # Service Enumeration
 
@@ -177,13 +162,8 @@ The service banner also confirms that the operating system is Linux.
 
 Although nothing immediately appears vulnerable, version enumeration provides useful context for later stages of the assessment.
 
-### Screenshot
-
-```md
 ![Service Enumeration](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q4.png)
-```
 
----
 
 # Web Enumeration
 
@@ -207,13 +187,8 @@ No visible content.
 
 At first glance the page appears empty, but machines that intentionally present blank pages often hide useful information within the source code.
 
-### Screenshot
-
-```md
 ![Blank Webpage](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q5.png)
-```
 
----
 
 # Directory Enumeration
 
@@ -255,13 +230,8 @@ The wording suggests:
 - Careful observation is required.
 - Traditional brute forcing may not be sufficient.
 
-### Screenshot
 
-```md
 ![Hidden HTML Comment](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q7.png)
-```
-
----
 
 # File Enumeration
 
@@ -281,13 +251,8 @@ http://192.168.56.133/notes-tips.txt
 
 returns a long string of unusual characters.
 
-### Screenshot
-
-```md
 ![notes-tips.txt](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q9.png)
-```
 
----
 
 # Investigating notes-tips.txt
 
@@ -337,13 +302,9 @@ I'll name it salome_and_??
 I must not forget to save it and put a good extension because I don't have much storage.
 ```
 
-### Screenshot
 
-```md
 ![CyberChef Base85 Decode](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q10.png)
-```
 
----
 
 # Analyzing the Decoded Message
 
@@ -406,13 +367,9 @@ After processing the default wordlist, John successfully recovers the archive pa
 turtle
 ```
 
-### Screenshot
 
-```md
 ![John the Ripper](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
-```
 
----
 
 # Extracting the Archive
 
@@ -430,14 +387,8 @@ Although the poem initially appears to be irrelevant, every unique word containe
 
 This observation will prove critical during the next stage of the assessment.
 
-### Screenshot
 
-```md
-![Poem Contents](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
-```
-
----
-
+![Poem Contents](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-
 # Building a Custom Password List
 
 Rather than relying on generic password dictionaries, a targeted wordlist is generated directly from the recovered poem.
@@ -493,13 +444,9 @@ Authentication succeeds and an interactive shell is presented.
 
 At first glance, everything appears normal. However, this quickly changes once basic enumeration begins.
 
-### Screenshot
 
-```md
 ![SSH Login](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q14.png)
-```
 
----
 
 # Unexpected Shell Behaviour
 
@@ -551,13 +498,9 @@ Output:
 Ineedmorepower
 ```
 
-### Screenshot
 
-```md
 ![User Flag](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q14.png)
-```
 
----
 
 # Investigating the Shell Trap
 
@@ -726,13 +669,9 @@ launches an interactive Bash shell while inheriting the current input and output
 
 Since the Node.js binary already possesses the required capability, the shell is started with full root privileges.
 
-### Screenshot
 
-```md
 ![Node Exploit](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
-```
 
----
 
 # Root Access
 
@@ -756,13 +695,9 @@ Output:
 uid=0(root)
 ```
 
-### Screenshot
 
-```md
 ![Root Shell](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
-```
 
----
 
 # Root Flag
 
@@ -780,13 +715,8 @@ Imthesuperhuman
 
 The machine has now been fully compromised.
 
-### Screenshot
 
-```md
 ![Root Flag](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
-```
-
----
 
 # Complete Attack Chain
 
