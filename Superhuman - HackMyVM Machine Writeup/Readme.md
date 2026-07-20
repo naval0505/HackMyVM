@@ -1,6 +1,6 @@
 # HackMyVM - Superhuman Writeup
 
-![HackMyVM](images/cover.png)
+
 
 ## Machine Information
 
@@ -20,6 +20,8 @@
 Today we are solving another **HackMyVM** Linux machine named **Superhuman**.
 
 Unlike most HackMyVM machines, this one does **not display its IP address** on the login banner, requiring us to identify it manually before beginning our assessment. The machine focuses heavily on observation and enumeration rather than immediately exposing an attack surface.
+
+![image_alt](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q1.png)
 
 Throughout the assessment we encounter multiple techniques including hidden HTML comments, file fuzzing, encoded data analysis, password-protected ZIP archives, custom password list generation, SSH brute forcing, shell restrictions, and finally privilege escalation through a misconfigured Linux capability assigned to the Node.js binary.
 
@@ -126,7 +128,7 @@ images/01-netdiscover.png
 ```
 
 ```md
-![Netdiscover](images/01-netdiscover.png)
+![Netdiscover](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q2.png)
 ```
 
 ---
@@ -178,7 +180,7 @@ Although nothing immediately appears vulnerable, version enumeration provides us
 ### Screenshot
 
 ```md
-![Service Enumeration](images/03-service-scan.png)
+![Service Enumeration](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q4.png)
 ```
 
 ---
@@ -208,7 +210,7 @@ At first glance the page appears empty, but machines that intentionally present 
 ### Screenshot
 
 ```md
-![Blank Webpage](images/04-blank-page.png)
+![Blank Webpage](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q5.png)
 ```
 
 ---
@@ -256,7 +258,7 @@ The wording suggests:
 ### Screenshot
 
 ```md
-![Hidden HTML Comment](images/05-source-comment.png)
+![Hidden HTML Comment](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q7.png)
 ```
 
 ---
@@ -282,7 +284,7 @@ returns a long string of unusual characters.
 ### Screenshot
 
 ```md
-![notes-tips.txt](images/06-notes.png)
+![notes-tips.txt](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q9.png)
 ```
 
 ---
@@ -338,7 +340,7 @@ I must not forget to save it and put a good extension because I don't have much 
 ### Screenshot
 
 ```md
-![CyberChef Base85 Decode](images/07-cyberchef.png)
+![CyberChef Base85 Decode](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q10.png)
 ```
 
 ---
@@ -379,10 +381,7 @@ However, extracting it immediately reveals another obstacle.
 
 The archive is encrypted with a password.
 
-### Screenshot
 
-```md
-![ZIP Download](images/08-zip-download.png)
 ```
 
 ---
@@ -410,7 +409,7 @@ turtle
 ### Screenshot
 
 ```md
-![John the Ripper](images/09-john.png)
+![John the Ripper](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
 ```
 
 ---
@@ -434,7 +433,7 @@ This observation will prove critical during the next stage of the assessment.
 ### Screenshot
 
 ```md
-![Poem Contents](images/10-poem.png)
+![Poem Contents](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
 ```
 
 ---
@@ -497,7 +496,7 @@ At first glance, everything appears normal. However, this quickly changes once b
 ### Screenshot
 
 ```md
-![SSH Login](images/11-ssh-login.png)
+![SSH Login](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q14.png)
 ```
 
 ---
@@ -555,7 +554,7 @@ Ineedmorepower
 ### Screenshot
 
 ```md
-![User Flag](images/12-user-flag.png)
+![User Flag](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q14.png)
 ```
 
 ---
@@ -600,13 +599,7 @@ One particularly useful command is:
 
 This recursively searches the filesystem for binaries possessing Linux capabilities.
 
-### Screenshot
 
-```md
-![Linux Capabilities](images/13-getcap.png)
-```
-
----
 
 # Understanding Linux Capabilities
 
@@ -736,7 +729,7 @@ Since the Node.js binary already possesses the required capability, the shell is
 ### Screenshot
 
 ```md
-![Node Exploit](images/14-node-root.png)
+![Node Exploit](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
 ```
 
 ---
@@ -766,7 +759,7 @@ uid=0(root)
 ### Screenshot
 
 ```md
-![Root Shell](images/15-root-shell.png)
+![Root Shell](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
 ```
 
 ---
@@ -790,7 +783,7 @@ The machine has now been fully compromised.
 ### Screenshot
 
 ```md
-![Root Flag](images/16-root-flag.png)
+![Root Flag](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
 ```
 
 ---
