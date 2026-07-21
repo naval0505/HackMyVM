@@ -388,7 +388,8 @@ Although the poem initially appears to be irrelevant, every unique word containe
 This observation will prove critical during the next stage of the assessment.
 
 
-![Poem Contents](https://github.com/naval0505/HackMyVM/blob/9921cfaecaa9a73eb42f6b25c2ee0951a60d32c6/Superhuman%20-
+![Poem Contents](https://github.com/naval0505/HackMyVM/blob/78d896ce077ca18a39153b643c551c0e311f0576/Superhuman%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
+
 # Building a Custom Password List
 
 Rather than relying on generic password dictionaries, a targeted wordlist is generated directly from the recovered poem.
