@@ -30,7 +30,7 @@ netdiscover -i eth1
 
 > **Machine Boot Screen**
 
-![Machine](q1)
+![Machine](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q1.png)
 
 ---
 
@@ -56,7 +56,7 @@ The target machine is:
 
 > **Netdiscover Output**
 
-![Netdiscover](q2)
+![Netdiscover](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q2.png)
 
 ---
 
@@ -79,7 +79,7 @@ Result:
 
 > **All Port Scan**
 
-![Nmap All Ports](q3)
+![Nmap All Ports](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q3.png)
 
 ---
 
@@ -104,7 +104,7 @@ The HTTP service appears to host a very minimal webpage.
 
 > **Service Detection**
 
-![Nmap Service Scan](q4)
+![Nmap Service Scan](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q4.png)
 
 ---
 
@@ -118,7 +118,7 @@ The page itself contains what appears to be an obfuscated Base64 string.
 
 > **Initial Webpage**
 
-![Homepage](q5)
+![Homepage](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q5.png)
 
 ---
 
@@ -147,7 +147,7 @@ This message is the biggest hint in the challenge.
 
 > **CyberChef Decode**
 
-![CyberChef](q6)
+![CyberChef](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q6.png)
 
 ---
 
@@ -186,7 +186,7 @@ These appear to be potential passwords.
 
 > **Page Source**
 
-![Source Code](q7)
+![Source Code](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q7.png)
 
 ---
 
@@ -222,7 +222,7 @@ This generated a Base64 version of the original wordlist.
 
 > **Preparing Base64 Wordlist**
 
-![Wordlist](q8)
+![Wordlist](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q8.png)
 
 ---
 
@@ -237,7 +237,7 @@ Running Feroxbuster with the encoded wordlist finally produced interesting resul
 
 > **Base64 File Discovery**
 
-![Feroxbuster](q9)
+![Feroxbuster](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q10.png)
 
 ---
 
@@ -271,7 +271,7 @@ Nothing here :(
 
 > **robots.txt**
 
-![robots](q10)
+![robots]([q10](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q10.png))
 
 ---
 
@@ -305,7 +305,7 @@ Downloading the file also returned Base64 encoded content, which was decoded to 
 
 > **Recovered id_rsa**
 
-![id_rsa](q11)
+![id_rsa](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
 
 ---
 
@@ -333,7 +333,7 @@ Once logged in, retrieve the user flag.
 
 > **User Flag**
 
-![user](q12)
+![user](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
 
 ---
 
@@ -357,7 +357,7 @@ User lucas may run the following commands on baseme:
 
 > **sudo -l**
 
-![sudo](q13)
+![sudo](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q13.png)
 
 ---
 
@@ -383,7 +383,7 @@ This allows extraction of the root password hash.
 
 > **Reading /etc/shadow**
 
-![shadow](q14)
+![shadow](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q14.png)
 
 ---
 
@@ -415,7 +415,7 @@ HMVFKBS64
 
 > **Root Flag**
 
-![root](q15)
+![root](https://github.com/naval0505/HackMyVM/blob/237f40a64151ab1bffeca2cf866b4d544082bab3/BaseMe%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
 
 ---
 
