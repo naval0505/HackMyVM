@@ -87,9 +87,7 @@ Like most HackMyVM machines, the target IP address is displayed directly on the 
 192.168.56.135
 ```
 
-**Q1**
-
-> *Insert Machine Banner Screenshot Here*
+![HackMyVM VISIONS machine banner displaying the assigned target IP address](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q1.png)
 
 ---
 
@@ -115,9 +113,8 @@ Only SSH and HTTP are accessible from the network.
 
 This significantly reduces the attack surface and tells us our investigation should primarily focus on the web service before attempting direct SSH access.
 
-**Q2**
+![Nmap full TCP port scan identifying open ports 22 (SSH) and 80 (HTTP)](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q2.png)
 
-> *Insert Full Nmap Scan Screenshot Here*
 
 ---
 
@@ -149,9 +146,8 @@ Nothing immediately stands out as vulnerable.
 
 Instead of attempting brute force attacks or looking for public exploits, it is usually more productive to begin investigating the web application itself.
 
-**Q3**
+![Nmap service and version detection identifying OpenSSH 7.9p1 and nginx 1.14.2](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q3.png)
 
-> *Insert Service Enumeration Screenshot Here*
 
 ---
 
@@ -167,9 +163,8 @@ However, blank pages should never be ignored during penetration testing.
 
 Developers frequently leave hidden comments, source code, metadata, or linked resources that are invisible during normal browsing.
 
-**Q4**
+![Blank web page displayed when accessing the target over HTTP using Burp Suite browser](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q4.png)
 
-> *Insert Website Screenshot Here*
 
 ---
 
@@ -182,6 +177,7 @@ Inside the HTML source we discover a reference to an image named:
 ```text
 white.png
 ```
+![SourcePage](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q5.png)
 
 Additionally, a username is left inside the source.
 
@@ -220,9 +216,7 @@ white.png
 
 This strongly suggests the challenge intentionally expects us to investigate the image rather than continue brute-force directory enumeration.
 
-**Q5**
 
-> *Insert Feroxbuster Screenshot Here*
 
 ---
 
@@ -265,9 +259,8 @@ ihaveadream
 
 Since we already recovered the username **alicia**, this becomes the obvious credential pair to test.
 
-**Q6**
+![ExifTool verbose output revealing the hidden password stored inside the PNG metadata comment field](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q6.png)
 
-> *Insert ExifTool Screenshot Here*
 
 ---
 
@@ -302,9 +295,8 @@ sophia
 
 Multiple user accounts generally indicate that lateral movement will be required before obtaining root access.
 
-**Q7**
+![SSH login as user alicia using the recovered credentials](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q7.png)
 
-> *Insert SSH Login Screenshot Here*
 
 ---
 
@@ -335,9 +327,8 @@ This immediately becomes our privilege escalation vector.
 
 Rather than searching for kernel exploits or vulnerable binaries, we can directly leverage this misconfiguration to obtain a shell as **emma**.
 
-**Q8**
+![Sudo privileges for alicia showing passwordless execution of Netcat as user emma](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q8.png)
 
-> *Insert sudo -l Screenshot Here*
 
 ---
 
@@ -406,9 +397,8 @@ connect to [192.168.56.106] from (UNKNOWN)
 
 We have now successfully moved from **alicia** to **emma**.
 
-**Q9**
+![Reverse shell obtained as user emma and stabilized for interactive access](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q9.png)
 
-> *Insert Reverse Shell Screenshot Here*
 
 ---
 
@@ -474,9 +464,8 @@ Although the note appears cryptic, it does not immediately reveal credentials or
 
 Like many CTF machines, hints often become meaningful only after additional enumeration.
 
-**Q10**
+![Contents of note.txt discovered inside Emma's home directory](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q10.png)
 
-> *Insert note.txt Screenshot Here*
 
 ---
 
@@ -550,9 +539,8 @@ CVE-2021-22555
 Netfilter Heap Out-of-Bounds
 ```
 
-**Q11**
+![LinPEAS highlighting potential privilege escalation findings and kernel vulnerabilities](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
 
-> *Insert LinPEAS Screenshot Here*
 
 ---
 
@@ -634,9 +622,8 @@ Unlike the previous password hidden in metadata, this clue is concealed visually
 
 This is an excellent reminder that image analysis should include both metadata inspection **and** visual examination.
 
-**Q12**
+![Photopea image editing revealing hidden credentials by increasing image contrast](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
 
-> *Insert Photopea Screenshot Here*
 
 ---
 
@@ -689,9 +676,8 @@ hmvicanseeforever
 
 The first objective of the machine has now been completed.
 
-**Q13**
+![Successful login as Sophia and retrieval of the user flag](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q13.png)
 
-> *Insert User Flag Screenshot Here*
 
 ---
 
@@ -774,9 +760,8 @@ However, hidden files often contain credentials, SSH keys, notes, configuration 
 
 This file immediately becomes our next investigation target.
 
-**Q14**
+![Sophia's sudo permissions allowing passwordless reading of Isabella's hidden .invisible file](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q14.png)
 
-> *Insert Sophia sudo -l Screenshot Here*
 
 ---
 
@@ -878,9 +863,8 @@ This demonstrates another common real-world scenario.
 
 Recovering a private key alone is often insufficient if the attacker cannot also recover the associated passphrase.
 
-**Q15**
+![John the Ripper successfully cracking Isabella's SSH private key passphrase](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q15.png)
 
-> *Insert John the Ripper Screenshot Here*
 
 ---
 
@@ -935,9 +919,8 @@ Since we already compromised Emma earlier, returning to that account provides no
 
 Therefore this path does not directly help us obtain root access.
 
-**Q16**
+![Symbolic link created from Isabella's .invisible file to the root user's SSH private key](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q16.png)
 
-> *Insert Isabella sudo -l Screenshot Here*
 
 ---
 
@@ -1001,9 +984,8 @@ Output:
 
 Instead of containing Isabella's SSH key, the hidden file now points directly to the root user's private key.
 
-**Q16**
+![Root shell displaying the contents of root.txt after full system compromise](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q16.png)
 
-> *Insert Symlink Screenshot Here*
 
 ---
 
@@ -1085,9 +1067,8 @@ hmvitspossible
 
 The machine has now been fully compromised.
 
-**Q17**
+![Root shell displaying the contents of root.txt after full system compromise](https://github.com/naval0505/HackMyVM/blob/f095c84bb4eb8e9d546c632ad6c7aba018439ec3/Visions%20-%20HackMyVM%20Machine%20Writeup/images/q17.png)
 
-> *Insert Root Flag Screenshot Here*
 
 ---
 
