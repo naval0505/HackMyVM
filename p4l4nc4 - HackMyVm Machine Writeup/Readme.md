@@ -15,6 +15,8 @@ Unlike most HackMyVM easy machines, this machine does **not** directly provide u
 
 ---
 
+![image alt](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q1.png)
+
 # Initial Reconnaissance
 
 ## Discovering the Target IP
@@ -35,7 +37,7 @@ After a few seconds, the target machine appears.
 192.168.56.136
 ```
 
-![Network Discovery](q1)
+![Network Discovery](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q2.png)
 
 ---
 
@@ -67,7 +69,7 @@ Only two ports are open.
 
 Since there are very few services exposed, our attack surface is quite limited, meaning the web server will likely be our primary entry point.
 
-![Nmap Scan](q2)
+![Nmap Scan](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q4.png)
 
 ---
 
@@ -98,7 +100,7 @@ Interesting observations:
 
 No obvious vulnerabilities are immediately visible from version information.
 
-![Service Scan](q3)
+![Service Scan](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q3.png)
 
 ---
 
@@ -106,7 +108,7 @@ No obvious vulnerabilities are immediately visible from version information.
 
 Opening port **80** in the browser shows the default Apache landing page.
 
-![Default Apache Page](q4)
+![Default Apache Page](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q5.png)
 
 This page usually doesn't contain anything useful by itself, but default pages often indicate that hidden files or directories may exist elsewhere.
 
@@ -137,7 +139,7 @@ http://192.168.56.136/robots.txt
 
 Interestingly, the page contains a long block of Portuguese text.
 
-![robots.txt](q5)
+![robots.txt](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q6.png)
 
 The translated text discusses the **Giant Sable Antelope (Palanca Negra Gigante)**, an endangered animal native to Angola.
 
@@ -232,7 +234,7 @@ page
 
 It returns **HTTP 200 OK**.
 
-![FFUF Parameter Discovery](q7)
+![FFUF Parameter Discovery](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q8.png)
 
 This strongly suggests that the PHP application dynamically loads files.
 
@@ -252,7 +254,7 @@ Success.
 
 The server returns the contents of the system password file.
 
-![LFI - /etc/passwd](q8)
+![LFI - /etc/passwd](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q9.png)
 
 Among the users we find:
 
@@ -311,7 +313,7 @@ We can now authenticate over SSH.
 ssh p4l4nc4@192.168.56.136
 ```
 
-![Hydra Success](q9)
+![Hydra Success](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q10.png)
 
 ---
 
@@ -389,7 +391,7 @@ One file stands out.
 /etc/passwd
 ```
 
-![Writable Passwd](q10)
+![Writable Passwd](https://github.com/naval0505/HackMyVM/blob/4dcf6b0dcd0c42a7b7c4151e5e1fc9b58dd13239/p4l4nc4%20-%20HackMyVm%20Machine%20Writeup/images/q11.png)
 
 ---
 
@@ -439,8 +441,6 @@ su - root
 
 Since no password is now required, we immediately obtain a root shell.
 
-![Root Shell](q11)
-
 ---
 
 # Root Flag
@@ -456,8 +456,6 @@ cat root.txt
 ```
 HMV{ROOT_FLAG}
 ```
-
-![Root Flag](q12)
 
 ---
 
