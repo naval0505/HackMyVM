@@ -35,7 +35,7 @@ The target machine is:
 192.168.56.140
 ```
 
-![Netdiscover](1)
+![Netdiscover](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q1.png)
 
 ---
 
@@ -54,7 +54,7 @@ Result:
 2222/tcp  open    ssh
 ```
 
-![Nmap All Ports](2)
+![Nmap All Ports](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q2.png)
 
 ---
 
@@ -75,7 +75,7 @@ Result:
 
 The machine is clearly running Linux.
 
-![Service Scan](3)
+![Service Scan](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/w4.png)
 
 ---
 
@@ -83,7 +83,7 @@ The machine is clearly running Linux.
 
 Browsing to port **80** reveals a very simple webpage.
 
-![Homepage](4)
+![Homepage](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q5.png)
 
 Viewing the page source reveals something interesting.
 
@@ -102,7 +102,7 @@ Two images immediately stand out:
 
 These are likely intended as hints.
 
-![Source Code](5)
+![Source Code](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q6.png)
 
 ---
 
@@ -131,7 +131,7 @@ Original filename:
 mateo.txt
 ```
 
-![StegSeek Hidden Image](6)
+![StegSeek Hidden Image](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q7.png)
 
 Extracted file:
 
@@ -160,7 +160,7 @@ feroxbuster -u http://192.168.56.140
 
 Nothing particularly interesting is discovered besides the two images.
 
-![Feroxbuster](7)
+![Feroxbuster](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q8.png)
 
 ---
 
@@ -180,7 +180,7 @@ thisismypassword
 
 Login successful.
 
-![SSH as mateo](8)
+![SSH as mateo](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q9.png)
 
 ---
 
@@ -251,7 +251,7 @@ Output:
 markuslovesbonita
 ```
 
-![StegSeek Original Image](9)
+![StegSeek Original Image](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q10.png)
 
 This appears to be another password.
 
@@ -315,7 +315,7 @@ Interesting result:
 /home/bonita/beroot
 ```
 
-![SUID Binary](10)
+![SUID Binary](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
 
 Run **LinPEAS** for additional enumeration.
 
@@ -387,7 +387,7 @@ cat user.txt
 HMVblackcat
 ```
 
-![User Shell](11)
+![User Shell](https://github.com/naval0505/HackMyVM/blob/f581ae11b2f469533ad70f76ad9371dd41f916a0/Twisted%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
 
 ---
 
@@ -482,7 +482,6 @@ Output:
 HMVwhereismycat
 ```
 
-![Root Flag](12)
 
 ---
 
@@ -500,7 +499,6 @@ HMVblackcat
 HMVwhereismycat
 ```
 
-![Flags](13)
 
 ---
 
