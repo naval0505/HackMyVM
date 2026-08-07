@@ -19,7 +19,7 @@ Unlike many other HackMyVM machines, the target IP address is already displayed 
 192.168.56.141
 ```
 
-![Machine](1)
+![Machine](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q1.png)
 
 ---
 
@@ -48,7 +48,7 @@ Only two ports are exposed externally:
 
 This suggests that the web application will most likely provide the initial foothold.
 
-![Nmap All Ports](2)
+![Nmap All Ports](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q2.png)
 
 ---
 
@@ -89,7 +89,7 @@ Interesting observations:
 
 The web application immediately becomes the primary target.
 
-![Service Enumeration](3)
+![Service Enumeration](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q3.png)
 
 ---
 
@@ -99,7 +99,7 @@ Browsing to port **80** reveals a login page for an internal **Maze Management S
 
 The application appears to require authentication before granting access.
 
-![Maze Login Page](4)
+![Maze Login Page](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q4.png)
 
 ---
 
@@ -145,7 +145,7 @@ feroxbuster \
 
 Even after using a large wordlist, no interesting directories were discovered.
 
-![Initial Feroxbuster Scan](5)
+![Initial Feroxbuster Scan](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q5.png)
 
 Rather than giving up, another enumeration pass was performed using a more targeted wordlist focused on PHP files.
 
@@ -190,7 +190,7 @@ Instead of exposing sensitive credentials through configuration files or backups
 
 These credentials can now be used to obtain an initial foothold on the target.
 
-![Credential Disclosure](6)
+![Credential Disclosure](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q6.png)
 
 ---
 
@@ -240,7 +240,7 @@ flag{user-3408c2a9ca636da4a40f054eea401fd9}
 
 The initial foothold has now been established.
 
-![SSH & User Flag](7)
+![SSH & User Flag](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q7.png)
 
 ---
 
@@ -313,7 +313,7 @@ Most of these are standard Linux SUID binaries.
 
 Nothing immediately appears vulnerable or misconfigured.
 
-![SUID Enumeration](8)
+![SUID Enumeration](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q8.png)
 
 ---
 
@@ -374,7 +374,7 @@ password: love123
 
 Weak password policies often become an unintended privilege escalation vector, and in this case they provide access to another user account on the machine.
 
-![Hydra Password Recovery](9)
+![Hydra Password Recovery](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q9.png)
 
 ---
 
@@ -408,7 +408,7 @@ chaojibaolong
 
 Rather than attempting to escalate directly from the original account, we now have access to a different user that may possess additional permissions.
 
-![SSH as chaojibaolong](10)
+![SSH as chaojibaolong](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q10.png)
 
 ---
 
@@ -479,7 +479,7 @@ The real functionality therefore resides inside **parser_core**, located under t
 
 This binary becomes the next target for analysis.
 
-![check_parser Analysis](11)
+![check_parser Analysis](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
 
 ---
 
@@ -560,7 +560,7 @@ A few important observations can be made:
 
 This indicates that the real logic resides inside **parser_core**, making it the primary target for further investigation.
 
-![check_parser Script](11)
+![check_parser Script](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
 
 ---
 
@@ -605,7 +605,7 @@ Rather than simply failing, the application intentionally switches execution con
 
 This behavior effectively grants access to a completely different user account without requiring any credentials.
 
-![Privilege Escalation](12)
+![Privilege Escalation](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
 
 ---
 
@@ -853,7 +853,7 @@ Output:
 flag{root-e0bf0dabcccb7d4519c0ad4b431aff16}
 ```
 
-![Root Flag](13)
+![Root Flag](https://github.com/naval0505/HackMyVM/blob/efca86a10622decc856877bdf89cd35975f3a375/Longshan%20-%20HackMyVM%20Machine%20Writeup/images/q13.png)
 
 ---
 
