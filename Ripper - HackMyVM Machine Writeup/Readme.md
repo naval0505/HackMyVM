@@ -17,6 +17,8 @@ Unlike some HackMyVM machines, the IP address was not provided directly on the m
 
 The overall attack path for this machine was:
 
+![Netdiscover output showing the Ripper machine IP](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q1.png)
+
 ```text
 Network Discovery
       ↓
@@ -55,7 +57,7 @@ netdiscover -i eth1
 
 > **Note:** Replace `eth1` with the interface connected to your lab network.
 
-![Netdiscover output showing the Ripper machine IP](q1)
+![Netdiscover output showing the Ripper machine IP](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q2.png)
 
 The scan returned several hosts:
 
@@ -93,7 +95,7 @@ Now that we have the target IP, we can perform a full TCP port scan.
 nmap -p- --min-rate 5000 192.168.56.143
 ```
 
-![Initial Nmap port scan](q3)
+![Initial Nmap port scan](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q3.png)
 
 The scan revealed two open ports:
 
@@ -122,7 +124,7 @@ Next, we perform service and version detection:
 nmap -sC -sV 192.168.56.143
 ```
 
-![Nmap service and version detection](q4)
+![Nmap service and version detection](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q4.png)
 
 The important results were:
 
@@ -159,7 +161,7 @@ http://192.168.56.143/
 
 reveals a simple maintenance page.
 
-![Ripper maintenance page](q5)
+![Ripper maintenance page](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q5.png)
 
 The page itself does not expose much useful information, so we move toward content discovery.
 
@@ -175,7 +177,7 @@ feroxbuster -u http://192.168.56.143/
 
 The initial scan did not reveal anything particularly interesting.
 
-![Feroxbuster initial scan](q6)
+![Feroxbuster initial scan](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q6.png)
 
 The server mainly returned the standard responses:
 
@@ -199,7 +201,7 @@ gobuster dir \
 -w /usr/share/wordlists/dirb/common.txt
 ```
 
-![Gobuster enumeration](q7)
+![Gobuster enumeration](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q7.png)
 
 Among the results we found:
 
@@ -232,7 +234,7 @@ ffuf -u http://192.168.56.143/FUZZ \
 -w /usr/share/seclists/Discovery/Web-Content/common.txt
 ```
 
-![FFUF discovering the backup SSH private key](q8)
+![FFUF discovering the backup SSH private key](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q8.png)
 
 This eventually revealed:
 
@@ -262,7 +264,7 @@ Then we used John the Ripper with the `rockyou.txt` wordlist:
 john hash --wordlist=/usr/share/wordlists/rockyou.txt
 ```
 
-![John the Ripper cracking the SSH private-key passphrase](q9)
+![John the Ripper cracking the SSH private-key passphrase](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q9.png)
 
 John successfully recovered the passphrase:
 
@@ -288,7 +290,7 @@ Then connected to SSH:
 ssh -i id_rsa.bak jack@192.168.56.143
 ```
 
-![SSH access as jack](q10)
+![SSH access as jack](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q10.png)
 
 We successfully obtained a shell as:
 
@@ -338,7 +340,7 @@ Rank: 1
 Details: Only Ubuntu is affected.
 ```
 
-![LinPEAS kernel vulnerability findings](q11)
+![LinPEAS kernel vulnerability findings](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q11.png)
 
 Although kernel exploits are worth investigating, vulnerability scanners often report potential matches based on version information alone.
 
@@ -412,7 +414,7 @@ helder
 
 We also found the user flag in the home directory.
 
-![User flag](q12)
+![User flag](https://github.com/naval0505/HackMyVM/blob/f65ddf4eb011f1e0e214e15b043a7cd16544eab4/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q12.png)
 
 At this point:
 
@@ -722,7 +724,7 @@ Finally:
 cat /root/root.txt
 ```
 
-![Root flag](q13)
+![Root flag](https://github.com/naval0505/HackMyVM/blob/401c59538484c1a3bf0b5f3812448a41c2fb4640/Ripper%20-%20HackMyVM%20Machine%20Writeup/images/q13.png)
 
 And with that, the **Ripper** machine is completely compromised.
 
