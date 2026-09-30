@@ -18,7 +18,7 @@ The complete attack path for this machine was:
 
 Since the machine does not provide its IP address on the boot screen, we can use `netdiscover` to identify hosts on the local network.
 
-![Machine Image](URL 1)
+![Machine Image](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q1.png)
 
 The command used was:
 
@@ -38,7 +38,7 @@ The target machine was:
 
     Main IP :: 192.168.56.147
 
-![Netdiscover Output](URL 2)
+![Netdiscover Output](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q2.png)
 
 ---
 
@@ -72,7 +72,7 @@ We have four interesting open ports:
 - `139/tcp` — NetBIOS / SMB
 - `445/tcp` — SMB
 
-![All Port Scan](URL 3)
+![All Port Scan](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q3.png)
 
 The presence of SMB on ports `139` and `445` is particularly interesting, so we will investigate those services further.
 
@@ -128,7 +128,7 @@ And:
         3.1.1:
         Message signing enabled but not required
 
-![Service and Version Detection](URL 4)
+![Service and Version Detection](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q4.png)
 
 At this point, SMB becomes our primary area of investigation.
 
@@ -190,7 +190,7 @@ The most interesting share is:
 
 Anonymous access is allowed.
 
-![SMB Share Enumeration](URL 6)
+![SMB Share Enumeration](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q5.png)
 
 ---
 
@@ -221,7 +221,7 @@ The important directory here is:
 
     html
 
-![SMB Share Contents](URL 7)
+![SMB Share Contents](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q6.png)
 
 This is where things become interesting.
 
@@ -257,7 +257,7 @@ For example:
 
 The web server itself initially shows the default Apache page.
 
-![Gobuster Enumeration](URL 8)
+![Gobuster Enumeration](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q7.png)
 
 The web fuzzing did not provide anything particularly useful.
 
@@ -317,7 +317,7 @@ We successfully obtain a reverse shell as:
 
     www-data
 
-![PHP Reverse Shell](URL 9)
+![PHP Reverse Shell](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q8.png)
 
 This gives us our initial foothold on the machine.
 
@@ -376,7 +376,7 @@ We read it with:
 
 This gives us the local flag.
 
-![Local Flag](URL 10)
+![Local Flag](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q9.png)
 
 With initial access complete, we move on to privilege escalation.
 
@@ -427,7 +427,7 @@ However, one entry immediately stands out:
 
 A SUID-enabled `gdb` binary is highly interesting because GDB provides Python execution functionality and can execute commands with the privileges inherited from the SUID binary.
 
-![SUID GDB](URL 11)
+![SUID GDB](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q11.png)
 
 This gives us a potential direct path to root.
 
@@ -502,7 +502,7 @@ The final proof is:
 
     a7c6ea4931ab86fb54c5400204474a39
 
-![Root Proof](URL 12)
+![Root Proof](https://github.com/naval0505/HackMyVM/blob/84c80194778b18101221df876c5a69a2af2ca56b/Connection%20-%20HackMyVM%20Writeup/Images/q12.png)
 
 The machine has now been fully compromised.
 
